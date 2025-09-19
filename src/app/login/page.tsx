@@ -32,6 +32,11 @@ import { Icons } from '@/components/icons';
 import { User, Stethoscope, Store } from 'lucide-react';
 import { useAuth, UserRole } from '@/hooks/use-auth';
 import Link from 'next/link';
+import type { Doctor } from '@/lib/types';
+import { doctors as initialDoctors } from '@/lib/doctors-data';
+
+const DOCTORS_KEY = 'doctors_data';
+
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -66,7 +71,19 @@ export default function LoginPage() {
       // Here, we'll just simulate a successful login.
       let name = 'Aarav Sharma';
       if (values.role === 'doctor') {
-        name = 'Dr. Sample';
+        const storedData = localStorage.getItem(DOCTORS_KEY);
+        const allDoctors = storedData ? JSON.parse(storedData) : initialDoctors;
+        // In a real app, we would look up user by email from a DB.
+        // For this demo, we assume the first doctor is the one logging in
+        // if no other logic is in place. A better approach would be to find
+        // the doctor by a unique identifier like email, if it were stored.
+        // For now, we'll default to a generic name if no doctors are found.
+        name = allDoctors.length > 0 ? allDoctors[0].name : 'Dr. Sample';
+        
+        // A better approach if we had email in doctors data:
+        // const doctor = allDoctors.find(d => d.email === values.email);
+        // name = doctor ? doctor.name : 'Dr. Sample';
+
       } else if (values.role === 'pharmacy') {
         name = 'City Pharmacy';
       }
