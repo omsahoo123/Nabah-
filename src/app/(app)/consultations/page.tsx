@@ -66,14 +66,14 @@ export default function ConsultationsPage() {
               <div className="absolute top-4 left-4 z-10">
                 <Avatar className="h-32 w-32 border-4 border-white/20">
                   <AvatarImage
-                    src="https://picsum.photos/seed/doctor-1/200/200"
+                    src="https://picsum.photos/seed/doctor-placeholder/200/200"
                     data-ai-hint="doctor portrait"
                   />
                   <AvatarFallback>DR</AvatarFallback>
                 </Avatar>
                 <div className="mt-2 text-center text-white bg-black/50 rounded-lg px-2 py-1">
-                  <p className="font-bold">Dr. Emily Carter</p>
-                  <p className="text-sm">Cardiologist</p>
+                  <p className="font-bold">Doctor's Video</p>
+                  <p className="text-sm">Specialty</p>
                 </div>
               </div>
 

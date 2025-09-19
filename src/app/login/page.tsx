@@ -66,7 +66,7 @@ export default function LoginPage() {
       // Here, we'll just simulate a successful login.
       let name = 'Aarav Sharma';
       if (values.role === 'doctor') {
-        name = 'Emily Carter';
+        name = 'Dr. Sample';
       } else if (values.role === 'pharmacy') {
         name = 'City Pharmacy';
       }
