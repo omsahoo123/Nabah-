@@ -14,17 +14,33 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Download, ArrowLeft, User, Calendar, Stethoscope } from 'lucide-react';
 import { healthRecords } from '@/lib/records-data';
-import { patients } from '@/lib/patients-data';
+import { patients as initialPatients, Patient } from '@/lib/patients-data';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
+
+const PATIENTS_STORAGE_KEY = 'patients_data';
 
 export default function PatientRecordPage() {
     const { toast } = useToast();
     const params = useParams();
     const patientId = params.patientId as string;
+    const [patient, setPatient] = React.useState<Patient | null | undefined>(undefined);
 
-    const patient = patients.find(p => p.id === patientId);
+    React.useEffect(() => {
+        const storedPatients = localStorage.getItem(PATIENTS_STORAGE_KEY);
+        let allPatients = initialPatients;
+        if (storedPatients) {
+            allPatients = JSON.parse(storedPatients).map((p: Patient) => ({
+                ...p,
+                lastVisit: new Date(p.lastVisit),
+            }));
+        }
+        
+        const foundPatient = allPatients.find(p => p.id === patientId);
+        setPatient(foundPatient);
+    }, [patientId]);
+
     // In a real app, you'd filter records based on the patientId
     const patientRecords = healthRecords; 
 
@@ -34,6 +50,15 @@ export default function PatientRecordPage() {
             description: `Downloading record ${recordId}.pdf...`,
         });
     };
+
+    if (patient === undefined) {
+        // Still loading patient data
+        return (
+             <div className="container mx-auto max-w-4xl space-y-8 text-center">
+                <h1 className="mt-8 text-2xl font-bold">Loading patient records...</h1>
+            </div>
+        )
+    }
 
     if (!patient) {
         return (
