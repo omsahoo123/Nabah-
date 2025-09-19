@@ -29,4 +29,25 @@ export const healthRecords: HealthRecord[] = [
     doctor: 'Dr. Ben Adams',
     prescription: 'R.I.C.E. method',
   },
+  {
+    id: 'REC005',
+    date: '2023-11-10T00:00:00.000Z',
+    diagnosis: 'Seasonal Flu',
+    doctor: 'Dr. Emily Carter',
+    prescription: 'Oseltamivir and rest',
+  },
+  {
+    id: 'REC006',
+    date: '2023-06-18T00:00:00.000Z',
+    diagnosis: 'Hypertension Follow-up',
+    doctor: 'Dr. Ben Adams',
+    prescription: 'Lisinopril 10mg, continue monitoring',
+  },
+  {
+    id: 'REC007',
+    date: '2023-03-22T00:00:00.000Z',
+    diagnosis: 'Gastritis',
+    doctor: 'Dr. Emily Carter',
+    prescription: 'Omeprazole and dietary adjustments',
+  },
 ];
