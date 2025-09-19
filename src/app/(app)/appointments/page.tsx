@@ -4,7 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Video } from 'lucide-react';
+import { Clock, Video, User, Calendar as CalendarIcon, Check, X } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { appointments } from '@/lib/appointments-data';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const availableSlots = [
   '09:00 AM',
@@ -17,13 +21,13 @@ const availableSlots = [
   '04:30 PM',
 ];
 
-export default function AppointmentsPage() {
+function PatientAppointments() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [selectedSlot, setSelectedSlot] = React.useState<string | null>(null);
 
   return (
-    <div className="container mx-auto max-w-6xl space-y-8">
-      <div>
+    <>
+       <div>
         <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
           Schedule an Appointment
         </h1>
@@ -31,7 +35,6 @@ export default function AppointmentsPage() {
           Choose a date and time that works for you.
         </p>
       </div>
-
       <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         <Card className="md:col-span-2">
           <CardHeader>
@@ -87,6 +90,98 @@ export default function AppointmentsPage() {
           </CardContent>
         </Card>
       </div>
+    </>
+  );
+}
+
+function DoctorAppointments() {
+    return (
+        <>
+            <div>
+                <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
+                    Manage Appointments
+                </h1>
+                <p className="mt-2 text-muted-foreground">
+                    View and manage your upcoming patient appointments.
+                </p>
+            </div>
+             <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Upcoming Consultations</CardTitle>
+                    <CardDescription>
+                        Here are your scheduled appointments for the upcoming week.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Patient</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Time</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {appointments.map(appointment => (
+                                <TableRow key={appointment.id}>
+                                    <TableCell className="font-medium">
+                                        <div className='flex items-center gap-3'>
+                                            <Avatar className="h-10 w-10">
+                                                <AvatarImage src={appointment.patientAvatar} data-ai-hint="patient portrait" />
+                                                <AvatarFallback>{appointment.patientName.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p className='font-semibold'>{appointment.patientName}</p>
+                                                <p className='text-sm text-muted-foreground'>{appointment.patientId}</p>
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>{new Date(appointment.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</TableCell>
+                                    <TableCell>{appointment.time}</TableCell>
+                                    <TableCell>
+                                        <Badge 
+                                            variant={appointment.status === 'Confirmed' ? 'default' : appointment.status === 'Completed' ? 'secondary' : 'destructive'} 
+                                            className={appointment.status === 'Confirmed' ? 'bg-blue-100 text-blue-800' : ''}
+                                        >
+                                            {appointment.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {appointment.status === 'Confirmed' && (
+                                            <Button variant="outline" size="sm">
+                                                <Video className="mr-2 h-4 w-4" />
+                                                Start Call
+                                            </Button>
+                                        )}
+                                        {appointment.status === 'Upcoming' && (
+                                             <div className='flex gap-2 justify-end'>
+                                                <Button variant="outline" size="icon" className='h-8 w-8'>
+                                                    <Check className="h-4 w-4 text-green-600" />
+                                                </Button>
+                                                <Button variant="outline" size="icon" className='h-8 w-8'>
+                                                    <X className="h-4 w-4 text-red-600" />
+                                                </Button>
+                                             </div>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </>
+    )
+}
+
+export default function AppointmentsPage() {
+  const { user } = useAuth();
+  
+  return (
+    <div className="container mx-auto max-w-6xl space-y-8">
+        {user?.role === 'doctor' ? <DoctorAppointments /> : <PatientAppointments />}
     </div>
   );
 }
