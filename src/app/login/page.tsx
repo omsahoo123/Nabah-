@@ -118,18 +118,14 @@ export default function LoginPage() {
                           className="grid grid-cols-2 gap-4"
                         >
                           <FormItem>
-                            <FormControl>
-                                <RadioGroupItem value="patient" id="patient" className="sr-only peer" />
-                            </FormControl>
+                            <RadioGroupItem value="patient" id="patient" className="sr-only peer" />
                             <FormLabel htmlFor="patient" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
                                 <User className="mb-3 h-6 w-6" />
                                 {t('patient')}
                             </FormLabel>
                           </FormItem>
                           <FormItem>
-                            <FormControl>
-                                <RadioGroupItem value="doctor" id="doctor" className="sr-only peer" />
-                            </FormControl>
+                            <RadioGroupItem value="doctor" id="doctor" className="sr-only peer" />
                              <FormLabel htmlFor="doctor" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
                                 <Stethoscope className="mb-3 h-6 w-6" />
                                 {t('doctor')}
