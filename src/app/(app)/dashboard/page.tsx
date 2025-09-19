@@ -18,6 +18,7 @@ import {
   Pill,
   ArrowRight,
   Users,
+  Store,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -86,16 +87,51 @@ export default function DashboardPage() {
       cta: 'View Patients',
     },
   ];
+  
+  const pharmacyFeatures = [
+    {
+      title: 'Manage Pharmacy',
+      description: 'Update your pharmacy details and medicine stock.',
+      href: '/manage-pharmacy',
+      icon: Store,
+      cta: 'Update Stock',
+    },
+  ];
 
-  const features = user?.role === 'doctor' ? doctorFeatures : patientFeatures;
-  const welcomeMessage =
-    user?.role === 'doctor'
-      ? `Welcome, Dr. ${user.name.split(' ').pop() || ''}`
-      : 'Welcome to Nabha Telehealth';
-  const subMessage =
-    user?.role === 'doctor'
-      ? 'Manage your patients and appointments efficiently.'
-      : 'Your partner in accessible healthcare. Here\'s what you can do.';
+  const getFeatures = () => {
+    switch (user?.role) {
+      case 'doctor':
+        return doctorFeatures;
+      case 'pharmacy':
+        return pharmacyFeatures;
+      default:
+        return patientFeatures;
+    }
+  };
+  
+  const features = getFeatures();
+  
+  const getWelcomeMessage = () => {
+     switch (user?.role) {
+      case 'doctor':
+        return `Welcome, Dr. ${user.name.split(' ').pop() || ''}`;
+      case 'pharmacy':
+        return `Welcome, ${user.name}`;
+       default:
+        return 'Welcome to Nabha Telehealth';
+    }
+  }
+
+  const getSubMessage = () => {
+     switch (user?.role) {
+      case 'doctor':
+        return 'Manage your patients and appointments efficiently.';
+      case 'pharmacy':
+        return 'Manage your pharmacy inventory and details.';
+       default:
+        return 'Your partner in accessible healthcare. Here\'s what you can do.';
+    }
+  }
 
   if (!user) {
     return (
@@ -115,9 +151,9 @@ export default function DashboardPage() {
     <div className="container mx-auto max-w-7xl space-y-8">
       <div>
         <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
-          {welcomeMessage}
+          {getWelcomeMessage()}
         </h1>
-        <p className="mt-2 text-muted-foreground">{subMessage}</p>
+        <p className="mt-2 text-muted-foreground">{getSubMessage()}</p>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

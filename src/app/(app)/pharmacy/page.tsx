@@ -21,7 +21,9 @@ import {
   Navigation,
 } from 'lucide-react';
 import type { Pharmacy } from '@/lib/types';
-import { pharmacies as allPharmacies } from '@/lib/pharmacy-data';
+import { pharmacies as initialPharmacies } from '@/lib/pharmacy-data';
+
+const PHARMACY_DATA_KEY = 'pharmacy_data';
 
 const StockBadge = ({
   stock,
@@ -58,18 +60,26 @@ const StockBadge = ({
 
 export default function PharmacyPage() {
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [pharmacies, setPharmacies] = React.useState<Pharmacy[]>(allPharmacies);
+  const [allPharmacies, setAllPharmacies] = React.useState<Pharmacy[]>([]);
+  const [filteredPharmacies, setFilteredPharmacies] = React.useState<Pharmacy[]>([]);
+
+  React.useEffect(() => {
+    const storedData = localStorage.getItem(PHARMACY_DATA_KEY);
+    const pharmacies = storedData ? JSON.parse(storedData) : initialPharmacies;
+    setAllPharmacies(pharmacies);
+    setFilteredPharmacies(pharmacies);
+  }, []);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
 
     if (query.trim() === '') {
-      setPharmacies(allPharmacies);
+      setFilteredPharmacies(allPharmacies);
       return;
     }
 
-    const filteredPharmacies = allPharmacies
+    const filtered = allPharmacies
       .map((pharmacy) => {
         const matchingMedicines = pharmacy.medicines.filter((med) =>
           med.name.toLowerCase().includes(query)
@@ -78,7 +88,7 @@ export default function PharmacyPage() {
       })
       .filter((pharmacy) => pharmacy.medicines.length > 0);
 
-    setPharmacies(filteredPharmacies);
+    setFilteredPharmacies(filtered);
   };
 
   const handleGetDirections = (name: string) => {
@@ -110,7 +120,7 @@ export default function PharmacyPage() {
         />
       </div>
 
-      {pharmacies.length === 0 && searchQuery && (
+      {filteredPharmacies.length === 0 && searchQuery && (
         <Card className="text-center py-12">
           <CardContent>
             <h3 className="text-xl font-semibold">No Results Found</h3>
@@ -122,7 +132,7 @@ export default function PharmacyPage() {
       )}
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        {pharmacies.map((pharmacy) => (
+        {filteredPharmacies.map((pharmacy) => (
           <Card
             key={pharmacy.id}
             className="overflow-hidden shadow-md transition-shadow hover:shadow-xl"
@@ -160,6 +170,9 @@ export default function PharmacyPage() {
                     <StockBadge stock={med.stock} />
                   </li>
                 ))}
+                 {pharmacy.medicines.length === 0 && !searchQuery && (
+                  <li className="text-sm text-muted-foreground">No medicines listed for this pharmacy.</li>
+                )}
               </ul>
             </CardContent>
             <CardFooter>

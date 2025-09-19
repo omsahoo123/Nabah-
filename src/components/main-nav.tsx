@@ -16,6 +16,7 @@ import {
   HeartPulse,
   Pill,
   Users,
+  Store,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from './ui/skeleton';
@@ -79,6 +80,21 @@ export function MainNav() {
     },
     { href: '/patients', label: 'Patients', icon: Users, key: 'patients' },
   ];
+  
+  const pharmacyMenuItems = [
+     {
+      href: '/dashboard',
+      label: 'Dashboard',
+      icon: LayoutDashboard,
+      key: 'dashboard',
+    },
+    {
+      href: '/manage-pharmacy',
+      label: 'Manage Pharmacy',
+      icon: Store,
+      key: 'manage_pharmacy',
+    },
+  ];
 
   if (!user) {
     return (
@@ -90,7 +106,18 @@ export function MainNav() {
     );
   }
 
-  const menuItems = user.role === 'doctor' ? doctorMenuItems : patientMenuItems;
+  const getMenuItems = () => {
+    switch (user?.role) {
+      case 'doctor':
+        return doctorMenuItems;
+      case 'pharmacy':
+        return pharmacyMenuItems;
+      default:
+        return patientMenuItems;
+    }
+  }
+
+  const menuItems = getMenuItems();
 
   const isItemActive = (href: string) => {
     // For nested routes, we want to match the base path.

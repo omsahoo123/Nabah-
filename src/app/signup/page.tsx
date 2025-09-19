@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { Icons } from '@/components/icons';
-import { User, Stethoscope } from 'lucide-react';
+import { User, Stethoscope, Store } from 'lucide-react';
 import { useAuth, UserRole } from '@/hooks/use-auth';
 import Link from 'next/link';
 
@@ -38,7 +38,7 @@ const formSchema = z.object({
   password: z
     .string()
     .min(8, { message: 'Password must be at least 8 characters.' }),
-  role: z.enum(['patient', 'doctor'], {
+  role: z.enum(['patient', 'doctor', 'pharmacy'], {
     required_error: 'Please select a role.',
   }),
 });
@@ -83,7 +83,7 @@ export default function SignupPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-4">
+      <div className="w-full max-w-lg space-y-4">
         <div className="flex flex-col items-center text-center">
             <Icons.logo className="h-12 w-12 text-primary" />
             <h1 className="mt-4 text-3xl font-headline font-bold tracking-tight md:text-4xl">
@@ -113,7 +113,7 @@ export default function SignupPage() {
                         <RadioGroup
                           onValueChange={field.onChange}
                           defaultValue={field.value}
-                          className="grid grid-cols-2 gap-4"
+                          className="grid grid-cols-3 gap-4"
                         >
                           <FormItem>
                             <RadioGroupItem value="patient" id="patient" className="sr-only peer" />
@@ -129,6 +129,13 @@ export default function SignupPage() {
                                 Doctor
                             </FormLabel>
                           </FormItem>
+                           <FormItem>
+                            <RadioGroupItem value="pharmacy" id="pharmacy" className="sr-only peer" />
+                             <FormLabel htmlFor="pharmacy" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
+                                <Store className="mb-3 h-6 w-6" />
+                                Pharmacy
+                            </FormLabel>
+                          </FormItem>
                         </RadioGroup>
                       </FormControl>
                       <FormMessage />
@@ -141,10 +148,10 @@ export default function SignupPage() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>Full Name / Pharmacy Name</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="e.g., Aarav Sharma"
+                          placeholder="e.g., Aarav Sharma or City Pharmacy"
                           {...field}
                         />
                       </FormControl>

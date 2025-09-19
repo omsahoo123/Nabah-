@@ -16,10 +16,15 @@ export type HealthRecord = {
   prescription: string;
 };
 
+export type Medicine = { 
+  name: string; 
+  stock: 'high' | 'low' | 'out of stock';
+};
+
 export type Pharmacy = {
   id: string;
   name: string;
   distance: string;
   imageUrl: string;
-  medicines: { name: string; stock: 'high' | 'low' | 'out of stock' }[];
+  medicines: Medicine[];
 };
