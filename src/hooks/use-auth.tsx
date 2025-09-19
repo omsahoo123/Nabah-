@@ -27,7 +27,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-const DOCTORS_KEY = 'doctors_data';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -50,24 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (userData: User) => {
     const defaultAvatar = `https://picsum.photos/seed/user-avatar-${Math.floor(Math.random() * 10)}/100/100`;
     const userWithAvatar = { ...userData, avatar: userData.avatar || defaultAvatar };
-    
-    if (userWithAvatar.role === 'doctor') {
-      const storedData = localStorage.getItem(DOCTORS_KEY);
-      const allDoctors = storedData ? JSON.parse(storedData) : initialDoctors;
-      
-      const doctorExists = allDoctors.some((d: Doctor) => d.name === userWithAvatar.name);
-      
-      if (!doctorExists) {
-        const newDoctor: Doctor = {
-          id: `DOC${String(allDoctors.length + 1).padStart(3, '0')}`,
-          name: userWithAvatar.name,
-          specialty: 'General Physician', // Default specialty
-          avatar: userWithAvatar.avatar!,
-        };
-        const updatedDoctors = [...allDoctors, newDoctor];
-        localStorage.setItem(DOCTORS_KEY, JSON.stringify(updatedDoctors));
-      }
-    }
     
     localStorage.setItem('user', JSON.stringify(userWithAvatar));
     setUser(userWithAvatar);
