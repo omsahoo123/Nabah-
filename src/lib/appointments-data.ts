@@ -6,7 +6,7 @@ export const appointments = [
       patientAvatar: 'https://picsum.photos/seed/patient-1/100/100',
       date: new Date(new Date().setDate(new Date().getDate() + 1)),
       time: '10:00 AM',
-      status: 'Confirmed',
+      status: 'Confirmed' as 'Confirmed' | 'Completed' | 'Upcoming' | 'Canceled',
     },
     {
       id: 'APP002',
@@ -15,7 +15,7 @@ export const appointments = [
       patientAvatar: 'https://picsum.photos/seed/patient-2/100/100',
       date: new Date(new Date().setDate(new Date().getDate() + 2)),
       time: '02:30 PM',
-      status: 'Confirmed',
+      status: 'Confirmed' as 'Confirmed' | 'Completed' | 'Upcoming' | 'Canceled',
     },
     {
       id: 'APP003',
@@ -24,7 +24,7 @@ export const appointments = [
       patientAvatar: 'https://picsum.photos/seed/patient-3/100/100',
       date: new Date(new Date().setDate(new Date().getDate() + 3)),
       time: '11:00 AM',
-      status: 'Upcoming',
+      status: 'Upcoming' as 'Confirmed' | 'Completed' | 'Upcoming' | 'Canceled',
     },
     {
       id: 'APP004',
@@ -33,7 +33,7 @@ export const appointments = [
       patientAvatar: 'https://picsum.photos/seed/patient-4/100/100',
       date: new Date(new Date().setDate(new Date().getDate() - 5)),
       time: '03:00 PM',
-      status: 'Completed',
+      status: 'Completed' as 'Confirmed' | 'Completed' | 'Upcoming' | 'Canceled',
     },
   ];
   
