@@ -61,34 +61,50 @@ const StockBadge = ({
 export default function PharmacyPage() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [allPharmacies, setAllPharmacies] = React.useState<Pharmacy[]>([]);
-  const [filteredPharmacies, setFilteredPharmacies] = React.useState<Pharmacy[]>([]);
-
-  React.useEffect(() => {
-    const storedData = localStorage.getItem(PHARMACY_DATA_KEY);
-    const pharmacies = storedData ? JSON.parse(storedData) : initialPharmacies;
-    setAllPharmacies(pharmacies);
-    setFilteredPharmacies(pharmacies);
-  }, []);
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value.toLowerCase();
-    setSearchQuery(query);
-
-    if (query.trim() === '') {
-      setFilteredPharmacies(allPharmacies);
-      return;
+  
+  const getFilteredPharmacies = () => {
+    if (searchQuery.trim() === '') {
+      return allPharmacies;
     }
-
-    const filtered = allPharmacies
+    
+    return allPharmacies
       .map((pharmacy) => {
         const matchingMedicines = pharmacy.medicines.filter((med) =>
-          med.name.toLowerCase().includes(query)
+          med.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
         return { ...pharmacy, medicines: matchingMedicines };
       })
       .filter((pharmacy) => pharmacy.medicines.length > 0);
+  };
+  
+  const filteredPharmacies = getFilteredPharmacies();
 
-    setFilteredPharmacies(filtered);
+  const loadPharmacies = React.useCallback(() => {
+    const storedData = localStorage.getItem(PHARMACY_DATA_KEY);
+    const pharmacies = storedData ? JSON.parse(storedData) : initialPharmacies;
+    setAllPharmacies(pharmacies);
+  }, []);
+
+
+  React.useEffect(() => {
+    loadPharmacies();
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === PHARMACY_DATA_KEY) {
+        loadPharmacies();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [loadPharmacies]);
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value;
+    setSearchQuery(query);
   };
 
   const handleGetDirections = (name: string) => {
