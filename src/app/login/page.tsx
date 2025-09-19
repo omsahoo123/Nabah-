@@ -64,7 +64,7 @@ export default function LoginPage() {
       // In a real app, you would validate credentials against a backend.
       // Here, we'll just simulate a successful login.
       const user = {
-        name: values.role === 'patient' ? 'Aarav Sharma' : 'Dr. Emily Carter',
+        name: values.role === 'patient' ? 'Aarav Sharma' : 'Emily Carter',
         email: values.email,
         role: values.role as UserRole,
       };
@@ -73,7 +73,7 @@ export default function LoginPage() {
 
       toast({
         title: 'Login Successful',
-        description: `Welcome back, ${user.name}!`,
+        description: `Welcome back, ${user.role === 'doctor' ? 'Dr. ' : ''}${user.name}!`,
       });
       router.push('/dashboard');
       setIsLoading(false);

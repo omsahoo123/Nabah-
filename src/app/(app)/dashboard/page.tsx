@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import {
   Card,
@@ -15,9 +17,12 @@ import {
   HeartPulse,
   Pill,
   ArrowRight,
+  Users,
 } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const features = [
+const patientFeatures = [
   {
     title: 'AI Symptom Checker',
     description: 'Get preliminary diagnostic suggestions based on your symptoms.',
@@ -55,16 +60,63 @@ const features = [
   },
 ];
 
+const doctorFeatures = [
+  {
+    title: 'Manage Appointments',
+    description: 'View and manage your upcoming patient appointments.',
+    href: '/appointments',
+    icon: Calendar,
+    cta: 'View Schedule',
+  },
+  {
+    title: 'Start Consultation',
+    description: 'Begin scheduled video consultations with your patients.',
+    href: '/consultations',
+    icon: Video,
+    cta: 'Start a Call',
+  },
+  {
+    title: 'Patient Records',
+    description: 'Access and manage the health records of your patients.',
+    href: '/patients',
+    icon: Users,
+    cta: 'View Patients',
+  },
+];
+
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const features = user?.role === 'doctor' ? doctorFeatures : patientFeatures;
+  const welcomeMessage =
+    user?.role === 'doctor'
+      ? `Welcome, Dr. ${user.name.split(' ').pop()}`
+      : `Welcome to Nabha Telehealth`;
+  const subMessage =
+    user?.role === 'doctor'
+      ? 'Manage your patients and appointments efficiently.'
+      : 'Your partner in accessible healthcare. Here\'s what you can do.';
+      
+  if (!user) {
+    return (
+       <div className="container mx-auto max-w-7xl space-y-8">
+        <Skeleton className="h-10 w-1/2" />
+        <Skeleton className="h-6 w-3/4" />
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-64 w-full rounded-xl" />
+            ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto max-w-7xl space-y-8">
       <div>
         <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
-          Welcome to Nabha Telehealth
+          {welcomeMessage}
         </h1>
-        <p className="mt-2 text-muted-foreground">
-          Your partner in accessible healthcare. Here's what you can do.
-        </p>
+        <p className="mt-2 text-muted-foreground">{subMessage}</p>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
