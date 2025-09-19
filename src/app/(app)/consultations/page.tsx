@@ -148,8 +148,7 @@ export default function ConsultationsPage() {
                                             <SelectContent>
                                                 <SelectItem value="en">English</SelectItem>
                                                 <SelectItem value="hi">Hindi (हिन्दी)</SelectItem>
-                                                <SelectItem value="bn">Bengali (বাংলা)</SelectItem>
-                                                <SelectItem value="te">Telugu (తెలుగు)</SelectItem>
+                                                <SelectItem value="pa">Punjabi (ਪੰਜਾਬੀ)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
