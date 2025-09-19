@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { doctors } from '@/lib/doctors-data';
+import { doctors as initialDoctors, Doctor } from '@/lib/doctors-data';
 import {
   Select,
   SelectContent,
@@ -41,6 +41,8 @@ import {
 } from '@/components/ui/select';
 
 const APPOINTMENTS_KEY = 'appointments_data';
+const DOCTORS_KEY = 'doctors_data';
+
 
 const availableSlots = [
   '09:00 AM',
@@ -55,10 +57,17 @@ const availableSlots = [
 
 function PatientAppointments() {
   const { user } = useAuth();
+  const [doctors, setDoctors] = React.useState<Doctor[]>([]);
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [selectedSlot, setSelectedSlot] = React.useState<string | null>(null);
   const [selectedDoctor, setSelectedDoctor] = React.useState<string | null>(null);
   const { toast } = useToast();
+
+  React.useEffect(() => {
+    const storedData = localStorage.getItem(DOCTORS_KEY);
+    const allDoctors = storedData ? JSON.parse(storedData) : initialDoctors;
+    setDoctors(allDoctors);
+  }, []);
 
   const handleBooking = () => {
     if (date && selectedSlot && selectedDoctor && user) {
@@ -91,7 +100,7 @@ function PatientAppointments() {
         description: `Your video consultation with ${selectedDoctor} is confirmed for ${date.toLocaleDateString()} at ${selectedSlot}.`,
       });
       setSelectedSlot(null);
-      setSelectedDoctor(null);
+      // We keep the doctor selected for easier subsequent bookings.
     } else {
         toast({ title: 'Incomplete Information', description: 'Please select a date, time, and doctor to book an appointment.', variant: 'destructive' });
     }
@@ -114,25 +123,29 @@ function PatientAppointments() {
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-8">
              <div className="w-full max-w-sm">
-                <Select onValueChange={setSelectedDoctor}>
+                <Select onValueChange={setSelectedDoctor} value={selectedDoctor || ""}>
                     <SelectTrigger className="w-full text-base py-6">
                         <SelectValue placeholder={<div className="flex items-center gap-2 text-muted-foreground"><Stethoscope /> Select a Doctor</div>} />
                     </SelectTrigger>
                     <SelectContent>
-                        {doctors.map(doctor => (
-                            <SelectItem key={doctor.id} value={doctor.name}>
-                                <div className="flex items-center gap-3">
-                                    <Avatar className="h-8 w-8">
-                                        <AvatarImage src={doctor.avatar} />
-                                        <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <p className="font-semibold">{doctor.name}</p>
-                                        <p className="text-sm text-muted-foreground">{doctor.specialty}</p>
+                        {doctors.length > 0 ? (
+                            doctors.map(doctor => (
+                                <SelectItem key={doctor.id} value={doctor.name}>
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-8 w-8">
+                                            <AvatarImage src={doctor.avatar} />
+                                            <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-semibold">{doctor.name}</p>
+                                            <p className="text-sm text-muted-foreground">{doctor.specialty}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </SelectItem>
-                        ))}
+                                </SelectItem>
+                            ))
+                        ) : (
+                            <div className="p-4 text-center text-sm text-muted-foreground">No doctors available. Please sign up a doctor account first.</div>
+                        )}
                     </SelectContent>
                 </Select>
             </div>
