@@ -63,15 +63,17 @@ export default function ProfilePage() {
   });
 
   React.useEffect(() => {
-    form.reset({
-      name: user?.name || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
-      age: user?.age || undefined,
-      gender: user?.gender || undefined,
-      address: user?.address || '',
-      avatar: user?.avatar || '',
-    });
+    if (user) {
+      form.reset({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        age: user.age || undefined,
+        gender: user.gender || undefined,
+        address: user.address || '',
+        avatar: user.avatar || '',
+      });
+    }
   }, [user, form]);
   
   const handleAvatarUpload = () => {
@@ -195,7 +197,7 @@ export default function ProfilePage() {
                     <FormItem>
                       <FormLabel>Age</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} readOnly={!isEditing} placeholder="e.g., 35" />
+                        <Input type="number" {...field} value={field.value ?? ''} readOnly={!isEditing} placeholder="e.g., 35" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -207,7 +209,7 @@ export default function ProfilePage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Gender</FormLabel>
-                       <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isEditing}>
+                       <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value} disabled={!isEditing}>
                          <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select your gender" />
