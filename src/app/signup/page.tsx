@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -34,6 +33,7 @@ import { useAuth, UserRole } from '@/hooks/use-auth';
 import Link from 'next/link';
 
 const formSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z
     .string()
@@ -43,7 +43,7 @@ const formSchema = z.object({
   }),
 });
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { login } = useAuth();
@@ -52,6 +52,7 @@ export default function LoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
       role: 'patient',
@@ -60,21 +61,20 @@ export default function LoginPage() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    // Simulate API call
+    // Simulate API call for user creation
     setTimeout(() => {
-      // In a real app, you would validate credentials against a backend.
-      // Here, we'll just simulate a successful login.
       const user = {
-        name: values.role === 'patient' ? 'Aarav Sharma' : 'Emily Carter',
+        name: values.name,
         email: values.email,
         role: values.role as UserRole,
       };
 
+      // Log the user in directly after signing up
       login(user);
 
       toast({
-        title: 'Login Successful',
-        description: `Welcome back, ${user.role === 'doctor' ? 'Dr. ' : ''}${user.name}!`,
+        title: 'Account Created',
+        description: `Welcome, ${user.role === 'doctor' ? 'Dr. ' : ''}${user.name}!`,
       });
       router.push('/dashboard');
       setIsLoading(false);
@@ -87,17 +87,17 @@ export default function LoginPage() {
         <div className="flex flex-col items-center text-center">
             <Icons.logo className="h-12 w-12 text-primary" />
             <h1 className="mt-4 text-3xl font-headline font-bold tracking-tight md:text-4xl">
-                Welcome to Nabha
+                Create an Account
             </h1>
             <p className="mt-2 text-muted-foreground">
-                Your partner in accessible healthcare.
+                Join Nabha to manage your health and consultations.
             </p>
         </div>
         <Card className="shadow-2xl">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Login</CardTitle>
+            <CardTitle className="font-headline text-2xl">Sign Up</CardTitle>
             <CardDescription>
-              Select your role and enter your credentials to access your dashboard.
+              Choose your role and fill in your details to get started.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -108,7 +108,7 @@ export default function LoginPage() {
                   name="role"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
-                      <FormLabel>Select your role</FormLabel>
+                      <FormLabel>I am a...</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -139,6 +139,23 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
+                
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="e.g., Aarav Sharma"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -164,23 +181,23 @@ export default function LoginPage() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="********" {...field} />
+                        <Input type="password" placeholder="8+ characters" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? 'Logging in...' : 'Login'}
+                  {isLoading ? 'Creating Account...' : 'Create Account'}
                 </Button>
               </form>
             </Form>
           </CardContent>
         </Card>
          <p className="px-8 text-center text-sm text-muted-foreground">
-            Don't have an account?{' '}
-            <Link href="/signup" className="underline underline-offset-4 hover:text-primary">
-                Sign up
+            Already have an account?{' '}
+            <Link href="/login" className="underline underline-offset-4 hover:text-primary">
+                Log in
             </Link>
         </p>
       </div>
