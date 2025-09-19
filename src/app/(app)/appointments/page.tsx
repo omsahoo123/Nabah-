@@ -226,12 +226,26 @@ function DoctorAppointments() {
   const [appointments, setAppointments] = React.useState<Appointment[]>([]);
   const { toast } = useToast();
 
-  React.useEffect(() => {
-    const storedData = localStorage.getItem(APPOINTMENTS_KEY);
-    const allAppointments = storedData ? JSON.parse(storedData) : initialAppointments;
-    const doctorAppointments = allAppointments.filter((app: Appointment) => app.doctorName === user?.name);
-    setAppointments(doctorAppointments);
+  const fetchAppointments = React.useCallback(() => {
+    if (user?.name) {
+      const storedData = localStorage.getItem(APPOINTMENTS_KEY);
+      const allAppointments = storedData ? JSON.parse(storedData) : initialAppointments;
+      const doctorAppointments = allAppointments.filter((app: Appointment) => app.doctorName === user.name);
+      setAppointments(doctorAppointments);
+    }
   }, [user]);
+
+  React.useEffect(() => {
+    fetchAppointments();
+    
+    // Set up an event listener to refetch data when the window gets focus
+    window.addEventListener('focus', fetchAppointments);
+    
+    // Clean up the event listener when the component unmounts
+    return () => {
+        window.removeEventListener('focus', fetchAppointments);
+    };
+  }, [fetchAppointments]);
 
   const updateLocalStorage = (updatedAppointments: Appointment[]) => {
       const storedData = localStorage.getItem(APPOINTMENTS_KEY);
