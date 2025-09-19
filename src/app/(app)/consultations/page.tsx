@@ -24,6 +24,7 @@ import {
   Languages,
   Check,
   Sparkles,
+  CameraOff,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -34,18 +35,81 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 export default function ConsultationsPage() {
   const router = useRouter();
+  const { toast } = useToast();
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const streamRef = React.useRef<MediaStream | null>(null);
+
   const [isMicOn, setIsMicOn] = React.useState(true);
   const [isVidOn, setIsVidOn] = React.useState(true);
   const [language, setLanguage] = React.useState('en');
+  const [hasCameraPermission, setHasCameraPermission] = React.useState<
+    boolean | null
+  >(null);
+
+  React.useEffect(() => {
+    const getCameraPermission = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        streamRef.current = stream;
+        setHasCameraPermission(true);
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description:
+            'Please enable camera permissions in your browser settings to use this app.',
+        });
+      }
+    };
+
+    getCameraPermission();
+
+    return () => {
+      // Cleanup: stop media tracks when component unmounts
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [toast]);
 
   const handleLeaveCall = () => {
     router.push('/dashboard');
+  };
+
+  const toggleVideo = () => {
+    if (streamRef.current) {
+      const videoTrack = streamRef.current.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = !isVidOn;
+        setIsVidOn(!isVidOn);
+      }
+    }
+  };
+  
+  const toggleMic = () => {
+    if (streamRef.current) {
+      const audioTrack = streamRef.current.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !isMicOn;
+        setIsMicOn(!isMicOn);
+      }
+    }
   };
 
   return (
@@ -77,12 +141,15 @@ export default function ConsultationsPage() {
                 </div>
               </div>
 
-              <div className="absolute bottom-4 right-4 z-10 h-24 w-40 sm:h-32 sm:w-56 overflow-hidden rounded-lg border-2 border-white/50">
-                <div className="bg-gray-800 h-full w-full flex items-center justify-center text-xs">
-                  {isVidOn ? 'Your Video' : 'Video Off'}
-                </div>
+              <div className="absolute bottom-4 right-4 z-10 h-24 w-40 sm:h-32 sm:w-56 overflow-hidden rounded-lg border-2 border-white/50 bg-black">
+                 <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted />
+                 {!isVidOn && hasCameraPermission && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 text-white">
+                        <VideoOff className="h-8 w-8" />
+                        <p className="text-sm mt-2">Camera is Off</p>
+                    </div>
+                )}
               </div>
-
               <Video className="h-24 w-24 text-gray-600" />
             </div>
             <div className="p-6 bg-card">
@@ -94,6 +161,15 @@ export default function ConsultationsPage() {
               </p>
 
               <div className="mt-6 space-y-4">
+                 {hasCameraPermission === false && (
+                    <Alert variant="destructive">
+                        <CameraOff className="h-4 w-4" />
+                        <AlertTitle>Camera Access Required</AlertTitle>
+                        <AlertDescription>
+                            Please allow camera access to use this feature. You may need to refresh the page and grant permission.
+                        </AlertDescription>
+                    </Alert>
+                )}
                 <div className="flex items-start gap-4">
                   <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <Languages className="h-5 w-5" />
@@ -160,7 +236,8 @@ export default function ConsultationsPage() {
             variant="outline"
             size="icon"
             className="h-12 w-12 rounded-full"
-            onClick={() => setIsMicOn(!isMicOn)}
+            onClick={toggleMic}
+            disabled={!hasCameraPermission}
           >
             {isMicOn ? (
               <Mic className="h-6 w-6" />
@@ -175,7 +252,8 @@ export default function ConsultationsPage() {
             variant="outline"
             size="icon"
             className="h-12 w-12 rounded-full"
-            onClick={() => setIsVidOn(!isVidOn)}
+            onClick={toggleVideo}
+            disabled={!hasCameraPermission}
           >
             {isVidOn ? (
               <Video className="h-6 w-6" />
