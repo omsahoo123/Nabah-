@@ -238,12 +238,14 @@ function DoctorAppointments() {
   React.useEffect(() => {
     fetchAppointments();
     
-    // Set up an event listener to refetch data when the window gets focus
-    window.addEventListener('focus', fetchAppointments);
+    const handleFocus = () => {
+        fetchAppointments();
+    };
+
+    window.addEventListener('focus', handleFocus);
     
-    // Clean up the event listener when the component unmounts
     return () => {
-        window.removeEventListener('focus', fetchAppointments);
+        window.removeEventListener('focus', handleFocus);
     };
   }, [fetchAppointments]);
 
