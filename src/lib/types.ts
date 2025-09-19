@@ -9,6 +9,7 @@ export type Appointment = {
 
 export type HealthRecord = {
   id: string;
+  patientId: string; // Added to link record to a patient
   date: string; // Using string for date to be serializable
   diagnosis: string;
   doctor: string;

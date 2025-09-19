@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, ArrowLeft, User, Calendar, Stethoscope } from 'lucide-react';
-import { healthRecords } from '@/lib/records-data';
+import { healthRecords as allHealthRecords } from '@/lib/records-data';
 import { patients as initialPatients, Patient } from '@/lib/patients-data';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -41,8 +41,7 @@ export default function PatientRecordPage() {
         setPatient(foundPatient);
     }, [patientId]);
 
-    // In a real app, you'd filter records based on the patientId
-    const patientRecords = healthRecords; 
+    const patientRecords = allHealthRecords.filter(record => record.patientId === patientId);
 
     const handleDownload = (recordId: string) => {
         toast({
@@ -117,29 +116,37 @@ export default function PatientRecordPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {patientRecords.map((record) => (
-                <TableRow key={record.id}>
-                  <TableCell className="font-medium">
-                    <Badge variant="secondary">{record.id}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(record.date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </TableCell>
-                  <TableCell>{record.diagnosis}</TableCell>
-                  <TableCell>{record.doctor}</TableCell>
-                  <TableCell className='max-w-xs truncate'>{record.prescription}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => handleDownload(record.id)}>
-                      <Download className="h-4 w-4" />
-                       <span className="sr-only">Download record</span>
-                    </Button>
-                  </TableCell>
+              {patientRecords.length > 0 ? (
+                patientRecords.map((record) => (
+                    <TableRow key={record.id}>
+                    <TableCell className="font-medium">
+                        <Badge variant="secondary">{record.id}</Badge>
+                    </TableCell>
+                    <TableCell>
+                        {new Date(record.date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        })}
+                    </TableCell>
+                    <TableCell>{record.diagnosis}</TableCell>
+                    <TableCell>{record.doctor}</TableCell>
+                    <TableCell className='max-w-xs truncate'>{record.prescription}</TableCell>
+                    <TableCell className="text-right">
+                        <Button variant="ghost" size="icon" onClick={() => handleDownload(record.id)}>
+                        <Download className="h-4 w-4" />
+                        <span className="sr-only">Download record</span>
+                        </Button>
+                    </TableCell>
+                    </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                    <TableCell colSpan={6} className="text-center h-24">
+                        No medical records found for this patient.
+                    </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>
