@@ -107,7 +107,7 @@ export default function SignupPage() {
                   control={form.control}
                   name="role"
                   render={({ field }) => (
-                    <FormItem className="space-y-3 hidden">
+                    <FormItem className="space-y-3">
                       <FormLabel>I am a...</FormLabel>
                       <FormControl>
                         <RadioGroup
@@ -122,6 +122,20 @@ export default function SignupPage() {
                                 Patient
                             </FormLabel>
                           </FormItem>
+                           <FormItem>
+                            <RadioGroupItem value="doctor" id="doctor" className="sr-only peer" />
+                             <FormLabel htmlFor="doctor" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
+                                <Stethoscope className="mb-3 h-6 w-6" />
+                                Doctor
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem>
+                            <RadioGroupItem value="pharmacy" id="pharmacy" className="sr-only peer" />
+                             <FormLabel htmlFor="pharmacy" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
+                                <Store className="mb-3 h-6 w-6" />
+                                Pharmacy
+                            </FormLabel>
+                          </FormItem>
                         </RadioGroup>
                       </FormControl>
                       <FormMessage />
@@ -134,7 +148,7 @@ export default function SignupPage() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>Full Name / Pharmacy Name</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g., Aarav Sharma"
