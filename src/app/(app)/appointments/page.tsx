@@ -31,7 +31,6 @@ import {
 } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { useTranslation } from '@/hooks/use-translation';
 
 const availableSlots = [
   '09:00 AM',
@@ -48,16 +47,12 @@ function PatientAppointments() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [selectedSlot, setSelectedSlot] = React.useState<string | null>(null);
   const { toast } = useToast();
-  const { t } = useTranslation();
 
   const handleBooking = () => {
     if (date && selectedSlot) {
       toast({
-        title: t('appointments.patient.bookingToast.title'),
-        description: t('appointments.patient.bookingToast.description', {
-          date: date.toLocaleDateString(),
-          time: selectedSlot,
-        }),
+        title: 'Appointment Booked!',
+        description: `Your video consultation is confirmed for ${date.toLocaleDateString()} at ${selectedSlot}.`,
       });
       setSelectedSlot(null);
     }
@@ -67,18 +62,16 @@ function PatientAppointments() {
     <>
       <div>
         <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
-          {t('appointments.patient.title')}
+          Schedule an Appointment
         </h1>
         <p className="mt-2 text-muted-foreground">
-          {t('appointments.patient.description')}
+          Choose a date and time that works for you.
         </p>
       </div>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="font-headline">
-              {t('appointments.patient.selectDate')}
-            </CardTitle>
+            <CardTitle className="font-headline">Select a Date</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center">
             <Calendar
@@ -95,20 +88,17 @@ function PatientAppointments() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">
-              {t('appointments.patient.availableTimes')}
-            </CardTitle>
+            <CardTitle className="font-headline">Available Times</CardTitle>
             <CardDescription>
-              {t('appointments.patient.forDate', {
-                date: date
-                  ? date.toLocaleDateString(undefined, {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })
-                  : t('today'),
-              })}
+              for{' '}
+              {date
+                ? date.toLocaleDateString(undefined, {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })
+                : 'today'}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -127,29 +117,23 @@ function PatientAppointments() {
             </div>
             {selectedSlot && (
               <div className="!mt-6 space-y-4 rounded-lg border bg-secondary p-4">
-                <h3 className="font-semibold">
-                  {t('appointments.patient.confirmAppointment')}
-                </h3>
+                <h3 className="font-semibold">Confirm Appointment</h3>
                 <p className="text-sm text-muted-foreground">
-                  {t('appointments.patient.youAreBooking')}{' '}
+                  You are booking a{' '}
                   <Badge
                     variant="secondary"
                     className="bg-accent/50 text-accent-foreground"
                   >
-                    {t('appointments.patient.videoConsultation')}
+                    Video Consultation
                   </Badge>{' '}
-                  {t('appointments.patient.forTime')}:
+                  for:
                 </p>
                 <div className="text-sm font-medium">
-                  <p>
-                    {t('date')}: {date?.toLocaleDateString()}
-                  </p>
-                  <p>
-                    {t('time')}: {selectedSlot}
-                  </p>
+                  <p>Date: {date?.toLocaleDateString()}</p>
+                  <p>Time: {selectedSlot}</p>
                 </div>
                 <Button className="w-full" onClick={handleBooking}>
-                  {t('appointments.patient.confirmBooking')}
+                  Confirm Booking
                 </Button>
               </div>
             )}
@@ -165,7 +149,6 @@ function DoctorAppointments() {
   const [appointments, setAppointments] =
     React.useState(initialAppointments);
   const { toast } = useToast();
-  const { t } = useTranslation();
 
   const handleStartCall = (appointmentId: string) => {
     router.push('/consultations');
@@ -181,10 +164,8 @@ function DoctorAppointments() {
       )
     );
     toast({
-      title: t('appointments.doctor.toast.title', { action }),
-      description: t('appointments.doctor.toast.description', {
-        action: action.toLowerCase(),
-      }),
+      title: `Appointment ${action}`,
+      description: `The appointment has been successfully ${action.toLowerCase()}.`,
     });
   };
 
@@ -192,30 +173,30 @@ function DoctorAppointments() {
     <>
       <div>
         <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
-          {t('appointments.doctor.title')}
+          Manage Appointments
         </h1>
         <p className="mt-2 text-muted-foreground">
-          {t('appointments.doctor.description')}
+          View and manage your upcoming patient appointments.
         </p>
       </div>
       <Card>
         <CardHeader>
           <CardTitle className="font-headline">
-            {t('appointments.doctor.upcomingConsultations')}
+            Upcoming Consultations
           </CardTitle>
           <CardDescription>
-            {t('appointments.doctor.upcomingDescription')}
+            Here are your scheduled appointments for the upcoming week.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('patient')}</TableHead>
-                <TableHead>{t('date')}</TableHead>
-                <TableHead>{t('time')}</TableHead>
-                <TableHead>{t('status')}</TableHead>
-                <TableHead className="text-right">{t('actions')}</TableHead>
+                <TableHead>Patient</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Time</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -264,7 +245,7 @@ function DoctorAppointments() {
                           : ''
                       }
                     >
-                      {t(`appointments.status.${appointment.status.toLowerCase()}`)}
+                      {appointment.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -275,7 +256,7 @@ function DoctorAppointments() {
                         onClick={() => handleStartCall(appointment.id)}
                       >
                         <Video className="mr-2 h-4 w-4" />
-                        {t('appointments.doctor.startCall')}
+                        Start Call
                       </Button>
                     )}
                     {appointment.status === 'Upcoming' && (
@@ -321,17 +302,6 @@ function DoctorAppointments() {
 
 export default function AppointmentsPage() {
   const { user } = useAuth();
-  const { t, ready } = useTranslation();
-
-  if (!ready) {
-    return (
-      <div className="container mx-auto max-w-6xl space-y-8">
-        <h1 className="text-3xl font-bold tracking-tight">
-          {t('loading')}...
-        </h1>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto max-w-6xl space-y-8">

@@ -33,7 +33,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Upload } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
-import { useTranslation } from '@/hooks/use-translation';
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -48,7 +47,6 @@ const profileSchema = z.object({
 export default function ProfilePage() {
   const { user, updateUser, isLoading } = useAuth();
   const { toast } = useToast();
-  const { t } = useTranslation();
   const [isEditing, setIsEditing] = React.useState(false);
 
   const form = useForm<z.infer<typeof profileSchema>>({
@@ -78,8 +76,8 @@ export default function ProfilePage() {
     )}/100/100`;
     form.setValue('avatar', newAvatar, { shouldDirty: true });
     toast({
-      title: t('profile.toast.avatarChanged.title'),
-      description: t('profile.toast.avatarChanged.description'),
+      title: 'Avatar Changed',
+      description: 'Don\'t forget to save your changes!',
     });
   };
 
@@ -95,8 +93,8 @@ export default function ProfilePage() {
     updateUser(updatedUserData);
     setIsEditing(false);
     toast({
-      title: t('profile.toast.profileUpdated.title'),
-      description: t('profile.toast.profileUpdated.description'),
+      title: 'Profile Updated',
+      description: 'Your information has been successfully saved.',
     });
   }
 
@@ -106,7 +104,7 @@ export default function ProfilePage() {
   };
 
   if (isLoading || !user) {
-    return <div>{t('loading')}...</div>;
+    return <div>Loading...</div>;
   }
 
   const nameInitial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
@@ -115,10 +113,10 @@ export default function ProfilePage() {
     <div className="container mx-auto max-w-4xl space-y-8">
       <div>
         <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
-          {t('profile.title')}
+          Your Profile
         </h1>
         <p className="mt-2 text-muted-foreground">
-          {t('profile.description')}
+          View and manage your personal information.
         </p>
       </div>
 
@@ -126,25 +124,25 @@ export default function ProfilePage() {
         <CardHeader className="flex flex-row items-start justify-between sm:items-center">
           <div>
             <CardTitle className="font-headline">
-              {t('profile.card.title')}
+              Personal Details
             </CardTitle>
             <CardDescription>
               {isEditing
-                ? t('profile.card.descriptionEditing')
-                : t('profile.card.descriptionViewing')}
+                ? 'Edit your details below and click save.'
+                : 'Your personal information.'}
             </CardDescription>
           </div>
           <div className="flex gap-2">
             {isEditing && (
               <Button onClick={handleCancel} variant="secondary">
-                {t('cancel')}
+                Cancel
               </Button>
             )}
             <Button
               onClick={() => setIsEditing(!isEditing)}
               variant={isEditing ? 'default' : 'outline'}
             >
-              {isEditing ? t('profile.saveChanges') : t('profile.editProfile')}
+              {isEditing ? 'Save Changes' : 'Edit Profile'}
             </Button>
           </div>
         </CardHeader>
@@ -168,7 +166,7 @@ export default function ProfilePage() {
                     onClick={handleAvatarUpload}
                   >
                     <Upload className="mr-2 h-4 w-4" />
-                    {t('profile.uploadPhoto')}
+                    Upload Photo
                   </Button>
                 )}
               </div>
@@ -178,7 +176,7 @@ export default function ProfilePage() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('profile.form.name')}</FormLabel>
+                      <FormLabel>Full Name</FormLabel>
                       <FormControl>
                         <Input {...field} readOnly={!isEditing} />
                       </FormControl>
@@ -191,7 +189,7 @@ export default function ProfilePage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('profile.form.email')}</FormLabel>
+                      <FormLabel>Email Address</FormLabel>
                       <FormControl>
                         <Input {...field} readOnly={!isEditing} />
                       </FormControl>
@@ -204,13 +202,13 @@ export default function ProfilePage() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('profile.form.phone')}</FormLabel>
+                      <FormLabel>Phone Number</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           value={field.value ?? ''}
                           readOnly={!isEditing}
-                          placeholder={t('profile.form.phonePlaceholder')}
+                          placeholder="e.g., +1 234 567 890"
                         />
                       </FormControl>
                       <FormMessage />
@@ -222,14 +220,14 @@ export default function ProfilePage() {
                   name="age"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('profile.form.age')}</FormLabel>
+                      <FormLabel>Age</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           {...field}
                           value={field.value ?? ''}
                           readOnly={!isEditing}
-                          placeholder={t('profile.form.agePlaceholder')}
+                          placeholder="e.g., 35"
                         />
                       </FormControl>
                       <FormMessage />
@@ -241,7 +239,7 @@ export default function ProfilePage() {
                   name="gender"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('profile.form.gender')}</FormLabel>
+                      <FormLabel>Gender</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
@@ -251,16 +249,16 @@ export default function ProfilePage() {
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue
-                              placeholder={t('profile.form.genderPlaceholder')}
+                              placeholder="Select your gender"
                             />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="male">{t('gender.male')}</SelectItem>
-                          <SelectItem value="female">{t('gender.female')}</SelectItem>
-                          <SelectItem value="other">{t('gender.other')}</SelectItem>
+                          <SelectItem value="male">Male</SelectItem>
+                          <SelectItem value="female">Female</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
                           <SelectItem value="prefer_not_to_say">
-                            {t('gender.prefer_not_to_say')}
+                            Prefer not to say
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -274,13 +272,13 @@ export default function ProfilePage() {
                     name="address"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('profile.form.address')}</FormLabel>
+                        <FormLabel>Address</FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
                             value={field.value ?? ''}
                             readOnly={!isEditing}
-                            placeholder={t('profile.form.addressPlaceholder')}
+                            placeholder="123 Health St, Wellness City, 12345"
                           />
                         </FormControl>
                         <FormMessage />
@@ -291,7 +289,7 @@ export default function ProfilePage() {
               </div>
               {isEditing && (
                 <div className="flex justify-end">
-                  <Button type="submit">{t('profile.saveChanges')}</Button>
+                  <Button type="submit">Save Changes</Button>
                 </div>
               )}
             </form>

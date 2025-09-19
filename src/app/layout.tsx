@@ -3,7 +3,6 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AuthProvider } from '@/hooks/use-auth';
-import { TranslationProvider } from '@/hooks/use-translation';
 
 export const metadata: Metadata = {
   title: 'Nabha Telehealth Access',
@@ -31,12 +30,10 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <AuthProvider>
-          <TranslationProvider>
-            <SidebarProvider>
-              {children}
-              <Toaster />
-            </SidebarProvider>
-          </TranslationProvider>
+          <SidebarProvider>
+            {children}
+            <Toaster />
+          </SidebarProvider>
         </AuthProvider>
       </body>
     </html>

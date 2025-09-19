@@ -15,12 +15,10 @@ import {
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { Badge } from './ui/badge';
-import { useTranslation } from '@/hooks/use-translation';
 
 export function UserNav() {
   const { user, logout } = useAuth();
   const router = useRouter();
-  const { t } = useTranslation();
 
   const handleLogout = () => {
     logout();
@@ -58,20 +56,20 @@ export function UserNav() {
               variant={user.role === 'doctor' ? 'destructive' : 'secondary'}
               className="w-fit capitalize !mt-2"
             >
-              {t(user.role)}
+              {user.role}
             </Badge>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/profile">{t('profile')}</Link>
+            <Link href="/profile">Profile</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>{t('billing')}</DropdownMenuItem>
-          <DropdownMenuItem>{t('settings')}</DropdownMenuItem>
+          <DropdownMenuItem>Billing</DropdownMenuItem>
+          <DropdownMenuItem>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>{t('logout')}</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

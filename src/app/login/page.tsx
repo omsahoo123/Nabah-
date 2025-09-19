@@ -32,7 +32,6 @@ import { Icons } from '@/components/icons';
 import { User, Stethoscope } from 'lucide-react';
 import { useAuth, UserRole } from '@/hooks/use-auth';
 import Link from 'next/link';
-import { useTranslation } from '@/hooks/use-translation';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -48,7 +47,6 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { login } = useAuth();
-  const { t } = useTranslation();
   const [isLoading, setIsLoading] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -75,8 +73,8 @@ export default function LoginPage() {
       login(user);
 
       toast({
-        title: t('login.toast.title'),
-        description: t('login.toast.description', { name: user.name.split(' ')[0] }),
+        title: 'Login Successful',
+        description: `Welcome back, ${user.name.split(' ')[0]}!`,
       });
       router.push('/dashboard');
       setIsLoading(false);
@@ -89,17 +87,17 @@ export default function LoginPage() {
         <div className="flex flex-col items-center text-center">
             <Icons.logo className="h-12 w-12 text-primary" />
             <h1 className="mt-4 text-3xl font-headline font-bold tracking-tight md:text-4xl">
-                {t('login.welcomeTitle')}
+                Welcome to Nabha
             </h1>
             <p className="mt-2 text-muted-foreground">
-                {t('login.welcomeSubtitle')}
+                Your partner in accessible healthcare.
             </p>
         </div>
         <Card className="shadow-2xl">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">{t('login.cardTitle')}</CardTitle>
+            <CardTitle className="font-headline text-2xl">Login</CardTitle>
             <CardDescription>
-              {t('login.cardDescription')}
+              Select your role and enter your credentials to access your dashboard.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -110,7 +108,7 @@ export default function LoginPage() {
                   name="role"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
-                      <FormLabel>{t('login.form.roleLabel')}</FormLabel>
+                      <FormLabel>Select your role</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -121,14 +119,14 @@ export default function LoginPage() {
                             <RadioGroupItem value="patient" id="patient" className="sr-only peer" />
                             <FormLabel htmlFor="patient" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
                                 <User className="mb-3 h-6 w-6" />
-                                {t('patient')}
+                                Patient
                             </FormLabel>
                           </FormItem>
                           <FormItem>
                             <RadioGroupItem value="doctor" id="doctor" className="sr-only peer" />
                              <FormLabel htmlFor="doctor" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
                                 <Stethoscope className="mb-3 h-6 w-6" />
-                                {t('doctor')}
+                                Doctor
                             </FormLabel>
                           </FormItem>
                         </RadioGroup>
@@ -143,11 +141,11 @@ export default function LoginPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('login.form.emailLabel')}</FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder={t('login.form.emailPlaceholder')}
+                          placeholder="name@example.com"
                           {...field}
                         />
                       </FormControl>
@@ -160,7 +158,7 @@ export default function LoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('login.form.passwordLabel')}</FormLabel>
+                      <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="********" {...field} />
                       </FormControl>
@@ -169,16 +167,16 @@ export default function LoginPage() {
                   )}
                 />
                 <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? t('login.form.submitButtonLoading') : t('login.form.submitButton')}
+                  {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
               </form>
             </Form>
           </CardContent>
         </Card>
          <p className="px-8 text-center text-sm text-muted-foreground">
-            {t('login.signupPrompt')}{' '}
+            Don't have an account?{' '}
             <Link href="/signup" className="underline underline-offset-4 hover:text-primary">
-                {t('login.signupLink')}
+                Sign up
             </Link>
         </p>
       </div>

@@ -20,18 +20,14 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { healthRecords } from '@/lib/records-data';
 import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from '@/hooks/use-translation';
 
 export default function RecordsPage() {
   const { toast } = useToast();
-  const { t } = useTranslation();
 
   const handleDownload = (recordId: string) => {
     toast({
-      title: t('records.toast.downloadStarted.title'),
-      description: t('records.toast.downloadStarted.description', {
-        recordId,
-      }),
+      title: 'Download Started',
+      description: `Downloading record ${recordId}.pdf...`,
     });
     // In a real application, this would trigger a file download.
   };
@@ -40,28 +36,31 @@ export default function RecordsPage() {
     <div className="container mx-auto max-w-7xl space-y-8">
       <div>
         <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
-          {t('records.title')}
+          Your Health Records
         </h1>
-        <p className="mt-2 text-muted-foreground">{t('records.description')}</p>
+        <p className="mt-2 text-muted-foreground">
+          Access your past diagnoses and prescriptions. This data is available
+          offline.
+        </p>
       </div>
 
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline">
-            {t('records.cardTitle')}
-          </CardTitle>
-          <CardDescription>{t('records.cardDescription')}</CardDescription>
+          <CardTitle className="font-headline">Medical History</CardTitle>
+          <CardDescription>
+            A list of your recent medical records.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('records.table.recordId')}</TableHead>
-                <TableHead>{t('date')}</TableHead>
-                <TableHead>{t('diagnosis')}</TableHead>
-                <TableHead>{t('doctor')}</TableHead>
-                <TableHead>{t('prescription')}</TableHead>
-                <TableHead className="text-right">{t('actions')}</TableHead>
+                <TableHead>Record ID</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Diagnosis</TableHead>
+                <TableHead>Doctor</TableHead>
+                <TableHead>Prescription</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -89,9 +88,7 @@ export default function RecordsPage() {
                       onClick={() => handleDownload(record.id)}
                     >
                       <Download className="h-4 w-4" />
-                      <span className="sr-only">
-                        {t('records.table.download')}
-                      </span>
+                      <span className="sr-only">Download record</span>
                     </Button>
                   </TableCell>
                 </TableRow>

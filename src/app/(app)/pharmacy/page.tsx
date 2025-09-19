@@ -22,30 +22,28 @@ import {
 } from 'lucide-react';
 import type { Pharmacy } from '@/lib/types';
 import { pharmacies as allPharmacies } from '@/lib/pharmacy-data';
-import { useTranslation } from '@/hooks/use-translation';
 
 const StockBadge = ({
   stock,
 }: {
   stock: 'high' | 'low' | 'out of stock';
 }) => {
-  const { t } = useTranslation();
   const stockInfo = {
     high: {
       icon: CheckCircle2,
-      label: t('pharmacy.stock.high'),
+      label: 'In Stock',
       color:
         'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
     },
     low: {
       icon: AlertTriangle,
-      label: t('pharmacy.stock.low'),
+      label: 'Low Stock',
       color:
         'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300',
     },
     'out of stock': {
       icon: XCircle,
-      label: t('pharmacy.stock.outOfStock'),
+      label: 'Out of Stock',
       color: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300',
     },
   };
@@ -61,7 +59,6 @@ const StockBadge = ({
 export default function PharmacyPage() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [pharmacies, setPharmacies] = React.useState<Pharmacy[]>(allPharmacies);
-  const { t } = useTranslation();
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value.toLowerCase();
@@ -95,10 +92,10 @@ export default function PharmacyPage() {
     <div className="container mx-auto max-w-7xl space-y-8">
       <div>
         <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
-          {t('pharmacy.title')}
+          Medicine Availability
         </h1>
         <p className="mt-2 text-muted-foreground">
-          {t('pharmacy.description')}
+          Find medicines in nearby pharmacies.
         </p>
       </div>
 
@@ -106,7 +103,7 @@ export default function PharmacyPage() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder={t('pharmacy.searchPlaceholder')}
+          placeholder="Search for a medicine (e.g., Paracetamol)"
           className="w-full rounded-full bg-card py-6 pl-12 text-base"
           onChange={handleSearch}
           value={searchQuery}
@@ -116,11 +113,9 @@ export default function PharmacyPage() {
       {pharmacies.length === 0 && searchQuery && (
         <Card className="text-center py-12">
           <CardContent>
-            <h3 className="text-xl font-semibold">
-              {t('pharmacy.noResults.title')}
-            </h3>
+            <h3 className="text-xl font-semibold">No Results Found</h3>
             <p className="text-muted-foreground mt-2">
-              {t('pharmacy.noResults.description', { query: searchQuery })}
+              We couldn't find any pharmacies with "{searchQuery}".
             </p>
           </CardContent>
         </Card>
@@ -152,8 +147,8 @@ export default function PharmacyPage() {
             <CardContent>
               <h4 className="mb-2 font-semibold">
                 {searchQuery
-                  ? t('pharmacy.stockFor', { query: searchQuery })
-                  : t('pharmacy.availableMedicines')}
+                  ? `Stock for "${searchQuery}"`
+                  : 'Available Medicines'}
               </h4>
               <ul className="space-y-2">
                 {pharmacy.medicines.map((med) => (
@@ -174,7 +169,7 @@ export default function PharmacyPage() {
                 onClick={() => handleGetDirections(pharmacy.name)}
               >
                 <Navigation className="mr-2 h-4 w-4" />
-                {t('pharmacy.getDirections')}
+                Get Directions
               </Button>
             </CardFooter>
           </Card>

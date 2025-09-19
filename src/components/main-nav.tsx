@@ -19,67 +19,65 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from './ui/skeleton';
-import { useTranslation } from '@/hooks/use-translation';
 
 export function MainNav() {
   const pathname = usePathname();
   const { user } = useAuth();
-  const { t } = useTranslation();
 
   const patientMenuItems = [
     {
       href: '/dashboard',
-      label: t('dashboard'),
+      label: 'Dashboard',
       icon: LayoutDashboard,
       key: 'dashboard',
     },
     {
       href: '/symptom-checker',
-      label: t('symptom_checker'),
+      label: 'Symptom Checker',
       icon: Stethoscope,
       key: 'symptom_checker',
     },
     {
       href: '/appointments',
-      label: t('appointments'),
+      label: 'Appointments',
       icon: Calendar,
       key: 'appointments',
     },
     {
       href: '/consultations',
-      label: t('consultations'),
+      label: 'Consultations',
       icon: Video,
       key: 'consultations',
     },
     {
       href: '/records',
-      label: t('health_records'),
+      label: 'Health Records',
       icon: HeartPulse,
       key: 'health_records',
     },
-    { href: '/pharmacy', label: t('pharmacy'), icon: Pill, key: 'pharmacy' },
+    { href: '/pharmacy', label: 'Pharmacy', icon: Pill, key: 'pharmacy' },
   ];
 
   const doctorMenuItems = [
     {
       href: '/dashboard',
-      label: t('dashboard'),
+      label: 'Dashboard',
       icon: LayoutDashboard,
       key: 'dashboard',
     },
     {
       href: '/appointments',
-      label: t('appointments'),
+      label: 'Appointments',
       icon: Calendar,
       key: 'appointments',
     },
     {
       href: '/consultations',
-      label: t('consultations'),
+      label: 'Consultations',
       icon: Video,
       key: 'consultations',
     },
-    { href: '/patients', label: t('patients'), icon: Users, key: 'patients' },
+    { href: '/patients', label: 'Patients', icon: Users, key: 'patients' },
   ];
 
   if (!user) {

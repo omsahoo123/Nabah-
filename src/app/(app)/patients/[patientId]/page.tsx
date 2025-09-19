@@ -24,7 +24,6 @@ import { patients as initialPatients, Patient } from '@/lib/patients-data';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
-import { useTranslation } from '@/hooks/use-translation';
 
 const PATIENTS_STORAGE_KEY = 'patients_data';
 
@@ -35,7 +34,6 @@ export default function PatientRecordPage() {
   const [patient, setPatient] = React.useState<Patient | null | undefined>(
     undefined
   );
-  const { t } = useTranslation();
 
   React.useEffect(() => {
     const storedPatients = localStorage.getItem(PATIENTS_STORAGE_KEY);
@@ -57,10 +55,8 @@ export default function PatientRecordPage() {
 
   const handleDownload = (recordId: string) => {
     toast({
-      title: t('patientRecords.toast.downloadStarted.title'),
-      description: t('patientRecords.toast.downloadStarted.description', {
-        recordId,
-      }),
+      title: 'Download Started',
+      description: `Downloading record ${recordId}.pdf...`,
     });
   };
 
@@ -68,9 +64,7 @@ export default function PatientRecordPage() {
     // Still loading patient data
     return (
       <div className="container mx-auto max-w-4xl space-y-8 text-center">
-        <h1 className="mt-8 text-2xl font-bold">
-          {t('patientRecords.loading')}
-        </h1>
+        <h1 className="mt-8 text-2xl font-bold">Loading patient records...</h1>
       </div>
     );
   }
@@ -78,13 +72,11 @@ export default function PatientRecordPage() {
   if (!patient) {
     return (
       <div className="container mx-auto max-w-4xl space-y-8 text-center">
-        <h1 className="mt-8 text-2xl font-bold">
-          {t('patientRecords.notFound')}
-        </h1>
+        <h1 className="mt-8 text-2xl font-bold">Patient not found</h1>
         <Button asChild>
           <Link href="/patients">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            {t('patientRecords.backToPatients')}
+            Back to Patient List
           </Link>
         </Button>
       </div>
@@ -97,7 +89,7 @@ export default function PatientRecordPage() {
         <Button variant="ghost" asChild className="mb-4">
           <Link href="/patients">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            {t('patientRecords.backToPatients')}
+            Back to Patient List
           </Link>
         </Button>
         <div className="flex items-center gap-6">
@@ -112,7 +104,7 @@ export default function PatientRecordPage() {
               {patient.name}
             </h1>
             <p className="mt-1 text-muted-foreground">
-              {t('patientRecords.pageDescription', { patientId: patient.id })}
+              Viewing medical records for patient ID: {patient.id}
             </p>
           </div>
         </div>
@@ -120,25 +112,21 @@ export default function PatientRecordPage() {
 
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline">
-            {t('patientRecords.medicalHistory')}
-          </CardTitle>
+          <CardTitle className="font-headline">Medical History</CardTitle>
           <CardDescription>
-            {t('patientRecords.medicalHistoryDescription', {
-              name: patient.name,
-            })}
+            A list of {patient.name}'s recent medical records.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t('patientRecords.recordId')}</TableHead>
-                <TableHead>{t('date')}</TableHead>
-                <TableHead>{t('diagnosis')}</TableHead>
-                <TableHead>{t('doctor')}</TableHead>
-                <TableHead>{t('prescription')}</TableHead>
-                <TableHead className="text-right">{t('actions')}</TableHead>
+                <TableHead>Record ID</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Diagnosis</TableHead>
+                <TableHead>Doctor</TableHead>
+                <TableHead>Prescription</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -167,9 +155,7 @@ export default function PatientRecordPage() {
                         onClick={() => handleDownload(record.id)}
                       >
                         <Download className="h-4 w-4" />
-                        <span className="sr-only">
-                          {t('patientRecords.downloadRecord')}
-                        </span>
+                        <span className="sr-only">Download record</span>
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -177,7 +163,7 @@ export default function PatientRecordPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center h-24">
-                    {t('patientRecords.noRecords')}
+                    No medical records found for this patient.
                   </TableCell>
                 </TableRow>
               )}
