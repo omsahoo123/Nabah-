@@ -1,3 +1,5 @@
+'use client';
+import * as React from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -5,31 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, CheckCircle2, AlertTriangle, XCircle, Navigation } from 'lucide-react';
 import type { Pharmacy } from '@/lib/types';
-
-const pharmacies: Pharmacy[] = [
-  {
-    id: 'PHA001',
-    name: 'City Pharmacy',
-    distance: '1.2 km away',
-    imageUrl: 'https://picsum.photos/seed/pharmacy-1/400/300',
-    medicines: [
-      { name: 'Paracetamol', stock: 'high' },
-      { name: 'Amoxicillin', stock: 'low' },
-      { name: 'Ibuprofen', stock: 'high' },
-    ],
-  },
-  {
-    id: 'PHA002',
-    name: 'Wellness Drugstore',
-    distance: '2.5 km away',
-    imageUrl: 'https://picsum.photos/seed/pharmacy-2/400/300',
-    medicines: [
-      { name: 'Paracetamol', stock: 'high' },
-      { name: 'Amoxicillin', stock: 'out of stock' },
-      { name: 'Loratadine', stock: 'low' },
-    ],
-  },
-];
+import { pharmacies as allPharmacies } from '@/lib/pharmacy-data';
 
 const StockBadge = ({ stock }: { stock: 'high' | 'low' | 'out of stock' }) => {
   const stockInfo = {
@@ -48,6 +26,31 @@ const StockBadge = ({ stock }: { stock: 'high' | 'low' | 'out of stock' }) => {
 
 
 export default function PharmacyPage() {
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [pharmacies, setPharmacies] = React.useState<Pharmacy[]>(allPharmacies);
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    if (query.trim() === '') {
+        setPharmacies(allPharmacies);
+        return;
+    }
+
+    const filteredPharmacies = allPharmacies.map(pharmacy => {
+        const matchingMedicines = pharmacy.medicines.filter(med => med.name.toLowerCase().includes(query));
+        return { ...pharmacy, medicines: matchingMedicines };
+    }).filter(pharmacy => pharmacy.medicines.length > 0);
+    
+    setPharmacies(filteredPharmacies);
+  };
+  
+  const handleGetDirections = (name: string) => {
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`;
+    window.open(url, '_blank');
+  };
+
   return (
     <div className="container mx-auto max-w-7xl space-y-8">
       <div>
@@ -65,8 +68,19 @@ export default function PharmacyPage() {
           type="search"
           placeholder="Search for a medicine (e.g., Paracetamol)"
           className="w-full rounded-full bg-card py-6 pl-12 text-base"
+          onChange={handleSearch}
+          value={searchQuery}
         />
       </div>
+      
+      {pharmacies.length === 0 && searchQuery && (
+        <Card className="text-center py-12">
+            <CardContent>
+                <h3 className='text-xl font-semibold'>No Results Found</h3>
+                <p className='text-muted-foreground mt-2'>We couldn't find any pharmacies with "{searchQuery}".</p>
+            </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {pharmacies.map((pharmacy) => (
@@ -87,20 +101,20 @@ export default function PharmacyPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <h4 className="mb-2 font-semibold">Stock for "Paracetamol"</h4>
+              <h4 className="mb-2 font-semibold">
+                {searchQuery ? `Stock for "${searchQuery}"` : 'Available Medicines'}
+              </h4>
               <ul className="space-y-2">
                 {pharmacy.medicines.map((med) => (
-                    med.name === 'Paracetamol' && (
                     <li key={med.name} className="flex items-center justify-between text-sm">
                         <span>{med.name}</span>
                         <StockBadge stock={med.stock} />
                     </li>
-                    )
                 ))}
               </ul>
             </CardContent>
             <CardFooter>
-                <Button variant="outline" className='w-full'>
+                <Button variant="outline" className='w-full' onClick={() => handleGetDirections(pharmacy.name)}>
                     <Navigation className='mr-2 h-4 w-4'/>
                     Get Directions
                 </Button>

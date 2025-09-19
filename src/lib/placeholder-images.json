@@ -29,6 +29,12 @@
       "description": "Exterior of Wellness Drugstore",
       "imageUrl": "https://picsum.photos/seed/pharmacy-2/400/300",
       "imageHint": "drugstore building"
+    },
+    {
+      "id": "pharmacy-3",
+      "description": "Exterior of HealthFirst Meds",
+      "imageUrl": "https://picsum.photos/seed/pharmacy-3/400/300",
+      "imageHint": "modern pharmacy"
     }
   ]
 }
