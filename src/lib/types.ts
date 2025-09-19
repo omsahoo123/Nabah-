@@ -28,3 +28,10 @@ export type Pharmacy = {
   imageUrl: string;
   medicines: Medicine[];
 };
+
+export type Doctor = {
+  id: string;
+  name: string;
+  specialty: string;
+  avatar: string;
+};
