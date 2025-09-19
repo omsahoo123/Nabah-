@@ -50,13 +50,20 @@ export function MainNav() {
 
   const menuItems = user.role === 'doctor' ? doctorMenuItems : patientMenuItems;
 
+  const isItemActive = (href: string) => {
+    if (href === '/patients') {
+        return pathname.startsWith('/patients');
+    }
+    return pathname === href;
+  }
+
   return (
     <SidebarMenu>
       {menuItems.map((item) => (
         <SidebarMenuItem key={item.href}>
           <SidebarMenuButton
             asChild
-            isActive={pathname.startsWith(item.href)}
+            isActive={isItemActive(item.href)}
             tooltip={item.label}
           >
             <Link href={item.href}>

@@ -14,6 +14,7 @@ import {
   import { FileText, PlusCircle } from 'lucide-react';
   import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
   import { patients as initialPatients } from '@/lib/patients-data';
+  import Link from 'next/link';
 
 
   export default function PatientsPage() {
@@ -76,9 +77,11 @@ import {
                         <Badge variant="outline">{patient.diagnosis}</Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">
-                        <FileText className="mr-2 h-4 w-4" />
-                         View Records
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href={`/patients/${patient.id}`}>
+                            <FileText className="mr-2 h-4 w-4" />
+                            View Records
+                        </Link>
                       </Button>
                     </TableCell>
                   </TableRow>
