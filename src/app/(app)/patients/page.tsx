@@ -17,7 +17,7 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, PlusCircle } from 'lucide-react';
+import { FileText, PlusCircle, Trash2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { patients as initialPatients, Patient } from '@/lib/patients-data';
 import Link from 'next/link';
@@ -31,6 +31,17 @@ import {
   DialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import {
   Form,
   FormControl,
@@ -110,6 +121,17 @@ export default function PatientsPage() {
     });
     form.reset();
     setIsDialogOpen(false);
+  }
+  
+  function handleDelete(patientId: string) {
+    const updatedPatients = patients.filter(p => p.id !== patientId);
+    setPatients(updatedPatients);
+    localStorage.setItem(PATIENTS_STORAGE_KEY, JSON.stringify(updatedPatients));
+    toast({
+      title: 'Patient Deleted',
+      description: 'The patient record has been successfully removed.',
+      variant: 'destructive',
+    });
   }
 
   return (
@@ -250,13 +272,35 @@ export default function PatientsPage() {
                   <TableCell>
                     <Badge variant="outline">{patient.diagnosis}</Badge>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right space-x-2">
                     <Button variant="ghost" size="sm" asChild>
                       <Link href={`/patients/${patient.id}`}>
                         <FileText className="mr-2 h-4 w-4" />
                         View Records
                       </Link>
                     </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                           <Trash2 className="h-4 w-4" />
+                         </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the patient's
+                            record from your list.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(patient.id)} className="bg-destructive hover:bg-destructive/90">
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 </TableRow>
               ))}
