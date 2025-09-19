@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth, User } from '@/hooks/use-auth';
@@ -45,21 +45,13 @@ const profileSchema = z.object({
 });
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, isLoading } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = React.useState(false);
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: user?.name || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
-      age: user?.age || undefined,
-      gender: user?.gender || undefined,
-      address: user?.address || '',
-      avatar: user?.avatar || '',
-    },
+    defaultValues: user || {},
   });
 
   React.useEffect(() => {
@@ -74,13 +66,13 @@ export default function ProfilePage() {
         avatar: user.avatar || '',
       });
     }
-  }, [user, form]);
+  }, [user, form, isEditing]);
   
   const handleAvatarUpload = () => {
     // In a real app, this would open a file picker and handle the upload.
     // For this demo, we'll just cycle through a few placeholder images.
     const newAvatar = `https://picsum.photos/seed/user-avatar-${Math.floor(Math.random() * 10)}/100/100`;
-    form.setValue('avatar', newAvatar);
+    form.setValue('avatar', newAvatar, { shouldDirty: true });
     toast({
       title: 'Avatar Changed',
       description: "Don't forget to save your changes!",
@@ -104,7 +96,12 @@ export default function ProfilePage() {
     });
   }
 
-  if (!user) {
+  const handleCancel = () => {
+    form.reset();
+    setIsEditing(false);
+  }
+
+  if (isLoading || !user) {
     return <div>Loading...</div>;
   }
   
@@ -122,7 +119,7 @@ export default function ProfilePage() {
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-start justify-between sm:items-center">
           <div>
             <CardTitle className="font-headline">Personal Details</CardTitle>
             <CardDescription>
@@ -131,9 +128,16 @@ export default function ProfilePage() {
                 : 'Your personal information.'}
             </CardDescription>
           </div>
-          <Button onClick={() => setIsEditing(!isEditing)} variant={isEditing ? "secondary" : "default"}>
-            {isEditing ? 'Cancel' : 'Edit Profile'}
-          </Button>
+           <div className="flex gap-2">
+            {isEditing && (
+              <Button onClick={handleCancel} variant="secondary">
+                Cancel
+              </Button>
+            )}
+            <Button onClick={() => setIsEditing(!isEditing)} variant={isEditing ? "default" : "outline"}>
+              {isEditing ? 'Save Changes' : 'Edit Profile'}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <Form {...form}>
