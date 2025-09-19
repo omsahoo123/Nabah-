@@ -11,8 +11,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+import { Badge } from './ui/badge';
 
 export function UserNav() {
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
+
+  if (!user) {
+    return null;
+  }
+
+  const nameInitial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -23,17 +40,20 @@ export function UserNav() {
               alt="User avatar"
               data-ai-hint="person portrait"
             />
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarFallback>{nameInitial}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Aarav Sharma</p>
+          <div className="flex flex-col space-y-2">
+            <p className="text-sm font-medium leading-none">{user.name}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              aarav.sharma@example.com
+              {user.email}
             </p>
+            <Badge variant={user.role === 'doctor' ? 'destructive' : 'secondary'} className="w-fit capitalize !mt-2">
+                {user.role}
+            </Badge>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -43,7 +63,7 @@ export function UserNav() {
           <DropdownMenuItem>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Log out</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
