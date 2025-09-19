@@ -19,7 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { FileText, PlusCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { patients as initialPatients } from '@/lib/patients-data';
+import { patients as initialPatients, Patient } from '@/lib/patients-data';
 import Link from 'next/link';
 import {
   Dialog,
@@ -54,10 +54,30 @@ const newPatientSchema = z.object({
     .min(3, { message: 'Initial diagnosis must be at least 3 characters.' }),
 });
 
+const PATIENTS_STORAGE_KEY = 'patients_data';
+
 export default function PatientsPage() {
-  const [patients, setPatients] = React.useState(initialPatients);
+  const [patients, setPatients] = React.useState<Patient[]>([]);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const { toast } = useToast();
+
+  React.useEffect(() => {
+    const storedPatients = localStorage.getItem(PATIENTS_STORAGE_KEY);
+    if (storedPatients) {
+      // Need to parse dates from strings
+      const parsedPatients = JSON.parse(storedPatients).map((p: Patient) => ({
+        ...p,
+        lastVisit: new Date(p.lastVisit),
+      }));
+      setPatients(parsedPatients);
+    } else {
+      setPatients(initialPatients);
+      localStorage.setItem(
+        PATIENTS_STORAGE_KEY,
+        JSON.stringify(initialPatients)
+      );
+    }
+  }, []);
 
   const form = useForm<z.infer<typeof newPatientSchema>>({
     resolver: zodResolver(newPatientSchema),
@@ -79,7 +99,10 @@ export default function PatientsPage() {
       diagnosis: values.diagnosis,
     };
 
-    setPatients((prev) => [newPatient, ...prev]);
+    const updatedPatients = [newPatient, ...patients];
+    setPatients(updatedPatients);
+    localStorage.setItem(PATIENTS_STORAGE_KEY, JSON.stringify(updatedPatients));
+
 
     toast({
       title: 'Patient Added',
