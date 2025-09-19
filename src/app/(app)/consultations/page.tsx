@@ -1,10 +1,33 @@
+'use client';
+import * as React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mic, MicOff, PhoneOff, Video, VideoOff, Languages } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useRouter } from 'next/navigation';
 
 export default function ConsultationsPage() {
+    const router = useRouter();
+    const [isMicOn, setIsMicOn] = React.useState(true);
+    const [isVidOn, setIsVidOn] = React.useState(true);
+    const [language, setLanguage] = React.useState('en');
+    
+    const handleLeaveCall = () => {
+        router.push('/dashboard');
+    }
+
     return (
         <div className="container mx-auto max-w-6xl space-y-8">
             <div>
@@ -33,7 +56,7 @@ export default function ConsultationsPage() {
 
                              <div className="absolute bottom-4 right-4 z-10 h-24 w-40 sm:h-32 sm:w-56 overflow-hidden rounded-lg border-2 border-white/50">
                                  <div className="bg-gray-800 h-full w-full flex items-center justify-center text-xs">
-                                     Your Video
+                                     {isVidOn ? 'Your Video' : 'Video Off'}
                                  </div>
                              </div>
                             
@@ -51,7 +74,7 @@ export default function ConsultationsPage() {
                                     <div>
                                         <h3 className="font-semibold">Language Selection</h3>
                                         <p className="text-sm text-muted-foreground mb-2">Select your preferred language for the call.</p>
-                                        <Select defaultValue="en">
+                                        <Select value={language} onValueChange={setLanguage}>
                                             <SelectTrigger className="w-[200px]">
                                                 <SelectValue placeholder="Language" />
                                             </SelectTrigger>
@@ -73,15 +96,35 @@ export default function ConsultationsPage() {
                     </div>
                 </CardContent>
                 <div className="flex items-center justify-center gap-4 border-t bg-card/50 p-4">
-                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-full">
-                        <Mic className="h-6 w-6" />
+                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-full" onClick={() => setIsMicOn(!isMicOn)}>
+                        {isMicOn ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
+                        <span className="sr-only">{isMicOn ? 'Mute microphone' : 'Unmute microphone'}</span>
                     </Button>
-                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-full">
-                        <Video className="h-6 w-6" />
+                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-full" onClick={() => setIsVidOn(!isVidOn)}>
+                        {isVidOn ? <Video className="h-6 w-6" /> : <VideoOff className="h-6 w-6" />}
+                        <span className="sr-only">{isVidOn ? 'Turn off video' : 'Turn on video'}</span>
                     </Button>
-                    <Button variant="destructive" size="icon" className="h-14 w-14 rounded-full">
-                        <PhoneOff className="h-7 w-7" />
-                    </Button>
+                    
+                     <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="icon" className="h-14 w-14 rounded-full">
+                                <PhoneOff className="h-7 w-7" />
+                                <span className="sr-only">Leave call</span>
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure you want to leave?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This will end the video consultation. You will be returned to your dashboard.
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel>Stay in Call</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleLeaveCall}>Leave Call</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </div>
             </Card>
         </div>
