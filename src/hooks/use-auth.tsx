@@ -8,6 +8,11 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  phone?: string;
+  age?: number;
+  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
+  address?: string;
+  avatar?: string;
 }
 
 interface AuthContextType {
@@ -15,6 +20,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (user: User) => void;
   logout: () => void;
+  updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,9 +44,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (userData: User) => {
+    const defaultAvatar = `https://picsum.photos/seed/user-avatar-${Math.floor(Math.random() * 10)}/100/100`;
+    const userWithAvatar = { ...userData, avatar: userData.avatar || defaultAvatar };
+    localStorage.setItem('user', JSON.stringify(userWithAvatar));
+    setUser(userWithAvatar);
+  };
+  
+  const updateUser = (userData: User) => {
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
-  };
+  }
 
   const logout = () => {
     localStorage.removeItem('user');
@@ -48,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
