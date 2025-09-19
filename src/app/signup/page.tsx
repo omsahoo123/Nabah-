@@ -31,6 +31,10 @@ import { Icons } from '@/components/icons';
 import { User, Stethoscope, Store } from 'lucide-react';
 import { useAuth, UserRole } from '@/hooks/use-auth';
 import Link from 'next/link';
+import type { Doctor } from '@/lib/types';
+import { doctors as initialDoctors } from '@/lib/doctors-data';
+
+const DOCTORS_KEY = 'doctors_data';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -68,6 +72,27 @@ export default function SignupPage() {
         email: values.email,
         role: values.role as UserRole,
       };
+      
+      // Special handling for new doctors to add them to the list
+      if (user.role === 'doctor') {
+        const storedData = localStorage.getItem(DOCTORS_KEY);
+        const allDoctors = storedData ? JSON.parse(storedData) : initialDoctors;
+        
+        const doctorExists = allDoctors.some((d: Doctor) => d.name.toLowerCase() === user.name.toLowerCase());
+        
+        if (!doctorExists) {
+          const defaultAvatar = `https://picsum.photos/seed/user-avatar-${Math.floor(Math.random() * 100)}/100/100`;
+          const newDoctor: Doctor = {
+            id: `DOC${String(allDoctors.length + 1).padStart(3, '0')}`,
+            name: user.name,
+            specialty: 'General Physician', // Default specialty
+            avatar: defaultAvatar,
+          };
+          const updatedDoctors = [...allDoctors, newDoctor];
+          localStorage.setItem(DOCTORS_KEY, JSON.stringify(updatedDoctors));
+        }
+      }
+
 
       // Log the user in directly after signing up
       login(user);
