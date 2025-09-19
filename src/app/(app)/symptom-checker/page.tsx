@@ -7,7 +7,7 @@ import {
   aiSymptomChecker,
   AISymptomCheckerOutput,
 } from '@/ai/flows/ai-symptom-checker';
-
+import { useTranslation } from '@/hooks/use-translation';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -40,6 +40,7 @@ export default function SymptomCheckerPage() {
   const [result, setResult] = useState<AISymptomCheckerOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,7 +57,7 @@ export default function SymptomCheckerPage() {
       const response = await aiSymptomChecker(values);
       setResult(response);
     } catch (e) {
-      setError('An error occurred while checking symptoms. Please try again.');
+      setError(t('symptomChecker.error'));
       console.error(e);
     } finally {
       setIsLoading(false);
@@ -67,16 +68,18 @@ export default function SymptomCheckerPage() {
     <div className="mx-auto max-w-3xl space-y-8">
       <div className="text-center">
         <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
-          AI Symptom Checker
+          {t('symptomChecker.title')}
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Describe your symptoms to get preliminary, AI-powered suggestions.
+          {t('symptomChecker.description')}
         </p>
       </div>
 
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline">Your Symptoms</CardTitle>
+          <CardTitle className="font-headline">
+            {t('symptomChecker.cardTitle')}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -86,30 +89,34 @@ export default function SymptomCheckerPage() {
                 name="symptoms"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Describe your symptoms</FormLabel>
+                    <FormLabel>{t('symptomChecker.form.label')}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="e.g., I have a persistent cough, a slight fever, and feel very tired."
+                        placeholder={t('symptomChecker.form.placeholder')}
                         className="resize-none"
                         rows={5}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      For best results, use full sentences and include all symptoms.
+                      {t('symptomChecker.form.description')}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full sm:w-auto"
+              >
                 {isLoading ? (
                   <>
                     <Sparkles className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing...
+                    {t('symptomChecker.analyzing')}
                   </>
                 ) : (
-                  'Check Symptoms'
+                  t('symptomChecker.submitButton')
                 )}
               </Button>
             </form>
@@ -121,7 +128,7 @@ export default function SymptomCheckerPage() {
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>{t('error')}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -131,15 +138,16 @@ export default function SymptomCheckerPage() {
 }
 
 function LoadingResult() {
+  const { t } = useTranslation();
   return (
     <Card className="animate-pulse">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-headline">
           <Bot className="h-6 w-6" />
-          AI Analysis
+          {t('symptomChecker.loadingResult.title')}
         </CardTitle>
         <CardDescription>
-          Our AI is analyzing your symptoms. This may take a moment.
+          {t('symptomChecker.loadingResult.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -156,6 +164,7 @@ function LoadingResult() {
 }
 
 function ResultDisplay({ result }: { result: AISymptomCheckerOutput }) {
+  const { t } = useTranslation();
   const formattedResult = result.potentialCauses
     .split('\n')
     .filter((line) => line.trim() !== '');
@@ -165,14 +174,17 @@ function ResultDisplay({ result }: { result: AISymptomCheckerOutput }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-headline">
           <Bot className="h-6 w-6" />
-          Potential Causes
+          {t('symptomChecker.resultDisplay.title')}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-2 text-sm text-foreground/90">
           {formattedResult.map((line, index) => {
-            const isListItem = line.trim().startsWith('*') || line.trim().startsWith('-');
-            const content = isListItem ? line.substring(line.indexOf(' ') + 1) : line;
+            const isListItem =
+              line.trim().startsWith('*') || line.trim().startsWith('-');
+            const content = isListItem
+              ? line.substring(line.indexOf(' ') + 1)
+              : line;
             if (isListItem) {
               return (
                 <div key={index} className="flex items-start">
@@ -186,13 +198,11 @@ function ResultDisplay({ result }: { result: AISymptomCheckerOutput }) {
         </div>
         <Alert variant="destructive" className="mt-6">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle className="font-bold">Important Disclaimer</AlertTitle>
+          <AlertTitle className="font-bold">
+            {t('symptomChecker.resultDisplay.disclaimerTitle')}
+          </AlertTitle>
           <AlertDescription>
-            This is not a medical diagnosis. The information provided is for
-            informational purposes only and is not a substitute for professional
-            medical advice, diagnosis, or treatment. Always seek the advice of
-            your physician or other qualified health provider with any questions
-            you may have regarding a medical condition.
+            {t('symptomChecker.resultDisplay.disclaimer')}
           </AlertDescription>
         </Alert>
       </CardContent>

@@ -15,10 +15,12 @@ import {
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { Badge } from './ui/badge';
+import { useTranslation } from '@/hooks/use-translation';
 
 export function UserNav() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     logout();
@@ -52,21 +54,24 @@ export function UserNav() {
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
-            <Badge variant={user.role === 'doctor' ? 'destructive' : 'secondary'} className="w-fit capitalize !mt-2">
-                {user.role}
+            <Badge
+              variant={user.role === 'doctor' ? 'destructive' : 'secondary'}
+              className="w-fit capitalize !mt-2"
+            >
+              {t(user.role)}
             </Badge>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/profile">Profile</Link>
+            <Link href="/profile">{t('profile')}</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>Billing</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem>{t('billing')}</DropdownMenuItem>
+          <DropdownMenuItem>{t('settings')}</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>{t('logout')}</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

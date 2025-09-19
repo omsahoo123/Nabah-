@@ -21,90 +21,95 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const patientFeatures = [
-  {
-    title: 'AI Symptom Checker',
-    description: 'Get preliminary diagnostic suggestions based on your symptoms.',
-    href: '/symptom-checker',
-    icon: Stethoscope,
-    cta: 'Check Symptoms',
-  },
-  {
-    title: 'Schedule Appointment',
-    description: 'Book and manage your appointments with healthcare providers.',
-    href: '/appointments',
-    icon: Calendar,
-    cta: 'Book Now',
-  },
-  {
-    title: 'Video Consultation',
-    description: 'Connect with doctors via video call in your preferred language.',
-    href: '/consultations',
-    icon: Video,
-    cta: 'Start a Call',
-  },
-  {
-    title: 'Health Records',
-    description: 'Access your medical history and records, even when offline.',
-    href: '/records',
-    icon: HeartPulse,
-    cta: 'View Records',
-  },
-  {
-    title: 'Pharmacy Checker',
-    description: 'Find nearby pharmacies and check medicine availability.',
-    href: '/pharmacy',
-    icon: Pill,
-    cta: 'Find Medicine',
-  },
-];
-
-const doctorFeatures = [
-  {
-    title: 'Manage Appointments',
-    description: 'View and manage your upcoming patient appointments.',
-    href: '/appointments',
-    icon: Calendar,
-    cta: 'View Schedule',
-  },
-  {
-    title: 'Start Consultation',
-    description: 'Begin scheduled video consultations with your patients.',
-    href: '/consultations',
-    icon: Video,
-    cta: 'Start a Call',
-  },
-  {
-    title: 'Patient Records',
-    description: 'Access and manage the health records of your patients.',
-    href: '/patients',
-    icon: Users,
-    cta: 'View Patients',
-  },
-];
+import { useTranslation } from '@/hooks/use-translation';
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { t } = useTranslation();
+
+  const patientFeatures = [
+    {
+      title: t('dashboard.patient.symptomChecker.title'),
+      description: t('dashboard.patient.symptomChecker.description'),
+      href: '/symptom-checker',
+      icon: Stethoscope,
+      cta: t('dashboard.patient.symptomChecker.cta'),
+    },
+    {
+      title: t('dashboard.patient.scheduleAppointment.title'),
+      description: t('dashboard.patient.scheduleAppointment.description'),
+      href: '/appointments',
+      icon: Calendar,
+      cta: t('dashboard.patient.scheduleAppointment.cta'),
+    },
+    {
+      title: t('dashboard.patient.videoConsultation.title'),
+      description: t('dashboard.patient.videoConsultation.description'),
+      href: '/consultations',
+      icon: Video,
+      cta: t('dashboard.patient.videoConsultation.cta'),
+    },
+    {
+      title: t('dashboard.patient.healthRecords.title'),
+      description: t('dashboard.patient.healthRecords.description'),
+      href: '/records',
+      icon: HeartPulse,
+      cta: t('dashboard.patient.healthRecords.cta'),
+    },
+    {
+      title: t('dashboard.patient.pharmacyChecker.title'),
+      description: t('dashboard.patient.pharmacyChecker.description'),
+      href: '/pharmacy',
+      icon: Pill,
+      cta: t('dashboard.patient.pharmacyChecker.cta'),
+    },
+  ];
+
+  const doctorFeatures = [
+    {
+      title: t('dashboard.doctor.manageAppointments.title'),
+      description: t('dashboard.doctor.manageAppointments.description'),
+      href: '/appointments',
+      icon: Calendar,
+      cta: t('dashboard.doctor.manageAppointments.cta'),
+    },
+    {
+      title: t('dashboard.doctor.startConsultation.title'),
+      description: t('dashboard.doctor.startConsultation.description'),
+      href: '/consultations',
+      icon: Video,
+      cta: t('dashboard.doctor.startConsultation.cta'),
+    },
+    {
+      title: t('dashboard.doctor.patientRecords.title'),
+      description: t('dashboard.doctor.patientRecords.description'),
+      href: '/patients',
+      icon: Users,
+      cta: t('dashboard.doctor.patientRecords.cta'),
+    },
+  ];
+
   const features = user?.role === 'doctor' ? doctorFeatures : patientFeatures;
   const welcomeMessage =
     user?.role === 'doctor'
-      ? `Welcome, Dr. ${user.name.split(' ').pop()}`
-      : `Welcome to Nabha Telehealth`;
+      ? t('dashboard.doctor.welcome', {
+          name: user.name.split(' ').pop() || '',
+        })
+      : t('dashboard.patient.welcome');
   const subMessage =
     user?.role === 'doctor'
-      ? 'Manage your patients and appointments efficiently.'
-      : 'Your partner in accessible healthcare. Here\'s what you can do.';
-      
+      ? t('dashboard.doctor.subMessage')
+      : t('dashboard.patient.subMessage');
+
   if (!user) {
     return (
-       <div className="container mx-auto max-w-7xl space-y-8">
+      <div className="container mx-auto max-w-7xl space-y-8">
         <Skeleton className="h-10 w-1/2" />
         <Skeleton className="h-6 w-3/4" />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-64 w-full rounded-xl" />
-            ))}
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-64 w-full rounded-xl" />
+          ))}
         </div>
       </div>
     );

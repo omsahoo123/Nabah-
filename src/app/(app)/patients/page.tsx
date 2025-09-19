@@ -56,6 +56,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslation } from '@/hooks/use-translation';
 
 const newPatientSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -71,6 +72,7 @@ export default function PatientsPage() {
   const [patients, setPatients] = React.useState<Patient[]>([]);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     const storedPatients = localStorage.getItem(PATIENTS_STORAGE_KEY);
@@ -114,22 +116,23 @@ export default function PatientsPage() {
     setPatients(updatedPatients);
     localStorage.setItem(PATIENTS_STORAGE_KEY, JSON.stringify(updatedPatients));
 
-
     toast({
-      title: 'Patient Added',
-      description: `${values.name} has been successfully added to your patient list.`,
+      title: t('patients.toast.patientAdded.title'),
+      description: t('patients.toast.patientAdded.description', {
+        name: values.name,
+      }),
     });
     form.reset();
     setIsDialogOpen(false);
   }
-  
+
   function handleDelete(patientId: string) {
-    const updatedPatients = patients.filter(p => p.id !== patientId);
+    const updatedPatients = patients.filter((p) => p.id !== patientId);
     setPatients(updatedPatients);
     localStorage.setItem(PATIENTS_STORAGE_KEY, JSON.stringify(updatedPatients));
     toast({
-      title: 'Patient Deleted',
-      description: 'The patient record has been successfully removed.',
+      title: t('patients.toast.patientDeleted.title'),
+      description: t('patients.toast.patientDeleted.description'),
       variant: 'destructive',
     });
   }
@@ -139,25 +142,24 @@ export default function PatientsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
-            Your Patients
+            {t('patients.title')}
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Manage your patient records and view their history.
+            {t('patients.description')}
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <PlusCircle className="mr-2" />
-              Add New Patient
+              {t('patients.addNewPatient')}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Add New Patient</DialogTitle>
+              <DialogTitle>{t('patients.dialog.title')}</DialogTitle>
               <DialogDescription>
-                Enter the details for the new patient. Click save when you're
-                done.
+                {t('patients.dialog.description')}
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -170,9 +172,14 @@ export default function PatientsPage() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>{t('patients.dialog.form.name')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Anika Singh" {...field} />
+                        <Input
+                          placeholder={t(
+                            'patients.dialog.form.namePlaceholder'
+                          )}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -183,10 +190,14 @@ export default function PatientsPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email Address</FormLabel>
+                      <FormLabel>
+                        {t('patients.dialog.form.email')}
+                      </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="patient@example.com"
+                          placeholder={t(
+                            'patients.dialog.form.emailPlaceholder'
+                          )}
                           type="email"
                           {...field}
                         />
@@ -200,10 +211,14 @@ export default function PatientsPage() {
                   name="diagnosis"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Initial Diagnosis</FormLabel>
+                      <FormLabel>
+                        {t('patients.dialog.form.diagnosis')}
+                      </FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="e.g., Suspected seasonal allergies"
+                          placeholder={t(
+                            'patients.dialog.form.diagnosisPlaceholder'
+                          )}
                           {...field}
                         />
                       </FormControl>
@@ -214,10 +229,10 @@ export default function PatientsPage() {
                 <DialogFooter>
                   <DialogClose asChild>
                     <Button type="button" variant="secondary">
-                      Cancel
+                      {t('cancel')}
                     </Button>
                   </DialogClose>
-                  <Button type="submit">Save Patient</Button>
+                  <Button type="submit">{t('patients.dialog.save')}</Button>
                 </DialogFooter>
               </form>
             </Form>
@@ -227,19 +242,19 @@ export default function PatientsPage() {
 
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline">Patient List</CardTitle>
-          <CardDescription>
-            A list of all patients assigned to you.
-          </CardDescription>
+          <CardTitle className="font-headline">
+            {t('patients.listTitle')}
+          </CardTitle>
+          <CardDescription>{t('patients.listDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Patient</TableHead>
-                <TableHead>Last Visit</TableHead>
-                <TableHead>Last Diagnosis</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('patient')}</TableHead>
+                <TableHead>{t('patients.lastVisit')}</TableHead>
+                <TableHead>{t('patients.lastDiagnosis')}</TableHead>
+                <TableHead className="text-right">{t('actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -252,7 +267,9 @@ export default function PatientsPage() {
                           src={patient.avatar}
                           data-ai-hint="patient portrait"
                         />
-                        <AvatarFallback>{patient.name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>
+                          {patient.name.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-semibold">{patient.name}</p>
@@ -263,7 +280,7 @@ export default function PatientsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {new Date(patient.lastVisit).toLocaleDateString('en-US', {
+                    {new Date(patient.lastVisit).toLocaleDateString(undefined, {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
@@ -276,27 +293,35 @@ export default function PatientsPage() {
                     <Button variant="ghost" size="sm" asChild>
                       <Link href={`/patients/${patient.id}`}>
                         <FileText className="mr-2 h-4 w-4" />
-                        View Records
+                        {t('patients.viewRecords')}
                       </Link>
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                           <Trash2 className="h-4 w-4" />
-                         </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogTitle>
+                            {t('patients.deleteDialog.title')}
+                          </AlertDialogTitle>
                           <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the patient's
-                            record from your list.
+                            {t('patients.deleteDialog.description')}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(patient.id)} className="bg-destructive hover:bg-destructive/90">
-                            Delete
+                          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(patient.id)}
+                            className="bg-destructive hover:bg-destructive/90"
+                          >
+                            {t('delete')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

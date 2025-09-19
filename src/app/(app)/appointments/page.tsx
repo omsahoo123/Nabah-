@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from '@/hooks/use-translation';
 
 const availableSlots = [
   '09:00 AM',
@@ -47,12 +48,16 @@ function PatientAppointments() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [selectedSlot, setSelectedSlot] = React.useState<string | null>(null);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleBooking = () => {
     if (date && selectedSlot) {
       toast({
-        title: 'Appointment Booked!',
-        description: `Your video consultation is confirmed for ${date.toLocaleDateString()} at ${selectedSlot}.`,
+        title: t('appointments.patient.bookingToast.title'),
+        description: t('appointments.patient.bookingToast.description', {
+          date: date.toLocaleDateString(),
+          time: selectedSlot,
+        }),
       });
       setSelectedSlot(null);
     }
@@ -62,16 +67,18 @@ function PatientAppointments() {
     <>
       <div>
         <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
-          Schedule an Appointment
+          {t('appointments.patient.title')}
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Choose a date and time that works for you.
+          {t('appointments.patient.description')}
         </p>
       </div>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle className="font-headline">Select a Date</CardTitle>
+            <CardTitle className="font-headline">
+              {t('appointments.patient.selectDate')}
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center">
             <Calendar
@@ -79,24 +86,29 @@ function PatientAppointments() {
               selected={date}
               onSelect={setDate}
               className="rounded-md border"
-              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+              disabled={(date) =>
+                date < new Date(new Date().setHours(0, 0, 0, 0))
+              }
             />
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">Available Times</CardTitle>
+            <CardTitle className="font-headline">
+              {t('appointments.patient.availableTimes')}
+            </CardTitle>
             <CardDescription>
-              for{' '}
-              {date
-                ? date.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })
-                : 'today'}
+              {t('appointments.patient.forDate', {
+                date: date
+                  ? date.toLocaleDateString(undefined, {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
+                  : t('today'),
+              })}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -115,23 +127,29 @@ function PatientAppointments() {
             </div>
             {selectedSlot && (
               <div className="!mt-6 space-y-4 rounded-lg border bg-secondary p-4">
-                <h3 className="font-semibold">Confirm Appointment</h3>
+                <h3 className="font-semibold">
+                  {t('appointments.patient.confirmAppointment')}
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  You are booking a{' '}
+                  {t('appointments.patient.youAreBooking')}{' '}
                   <Badge
                     variant="secondary"
                     className="bg-accent/50 text-accent-foreground"
                   >
-                    Video Consultation
+                    {t('appointments.patient.videoConsultation')}
                   </Badge>{' '}
-                  for:
+                  {t('appointments.patient.forTime')}:
                 </p>
                 <div className="text-sm font-medium">
-                  <p>Date: {date?.toLocaleDateString()}</p>
-                  <p>Time: {selectedSlot}</p>
+                  <p>
+                    {t('date')}: {date?.toLocaleDateString()}
+                  </p>
+                  <p>
+                    {t('time')}: {selectedSlot}
+                  </p>
                 </div>
                 <Button className="w-full" onClick={handleBooking}>
-                  Confirm Booking
+                  {t('appointments.patient.confirmBooking')}
                 </Button>
               </div>
             )}
@@ -147,6 +165,7 @@ function DoctorAppointments() {
   const [appointments, setAppointments] =
     React.useState(initialAppointments);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleStartCall = (appointmentId: string) => {
     router.push('/consultations');
@@ -162,8 +181,10 @@ function DoctorAppointments() {
       )
     );
     toast({
-      title: `Appointment ${action}`,
-      description: `The appointment has been successfully ${action.toLowerCase()}.`,
+      title: t('appointments.doctor.toast.title', { action }),
+      description: t('appointments.doctor.toast.description', {
+        action: action.toLowerCase(),
+      }),
     });
   };
 
@@ -171,30 +192,30 @@ function DoctorAppointments() {
     <>
       <div>
         <h1 className="text-3xl font-headline font-bold tracking-tight md:text-4xl">
-          Manage Appointments
+          {t('appointments.doctor.title')}
         </h1>
         <p className="mt-2 text-muted-foreground">
-          View and manage your upcoming patient appointments.
+          {t('appointments.doctor.description')}
         </p>
       </div>
       <Card>
         <CardHeader>
           <CardTitle className="font-headline">
-            Upcoming Consultations
+            {t('appointments.doctor.upcomingConsultations')}
           </CardTitle>
           <CardDescription>
-            Here are your scheduled appointments for the upcoming week.
+            {t('appointments.doctor.upcomingDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Patient</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('patient')}</TableHead>
+                <TableHead>{t('date')}</TableHead>
+                <TableHead>{t('time')}</TableHead>
+                <TableHead>{t('status')}</TableHead>
+                <TableHead className="text-right">{t('actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -212,7 +233,9 @@ function DoctorAppointments() {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-semibold">{appointment.patientName}</p>
+                        <p className="font-semibold">
+                          {appointment.patientName}
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           {appointment.patientId}
                         </p>
@@ -220,7 +243,7 @@ function DoctorAppointments() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {new Date(appointment.date).toLocaleDateString('en-US', {
+                    {new Date(appointment.date).toLocaleDateString(undefined, {
                       month: 'long',
                       day: 'numeric',
                     })}
@@ -232,8 +255,8 @@ function DoctorAppointments() {
                         appointment.status === 'Confirmed'
                           ? 'default'
                           : appointment.status === 'Completed'
-                            ? 'secondary'
-                            : 'destructive'
+                          ? 'secondary'
+                          : 'destructive'
                       }
                       className={
                         appointment.status === 'Confirmed'
@@ -241,7 +264,7 @@ function DoctorAppointments() {
                           : ''
                       }
                     >
-                      {appointment.status}
+                      {t(`appointments.status.${appointment.status.toLowerCase()}`)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -252,7 +275,7 @@ function DoctorAppointments() {
                         onClick={() => handleStartCall(appointment.id)}
                       >
                         <Video className="mr-2 h-4 w-4" />
-                        Start Call
+                        {t('appointments.doctor.startCall')}
                       </Button>
                     )}
                     {appointment.status === 'Upcoming' && (
@@ -298,10 +321,25 @@ function DoctorAppointments() {
 
 export default function AppointmentsPage() {
   const { user } = useAuth();
+  const { t, ready } = useTranslation();
+
+  if (!ready) {
+    return (
+      <div className="container mx-auto max-w-6xl space-y-8">
+        <h1 className="text-3xl font-bold tracking-tight">
+          {t('loading')}...
+        </h1>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto max-w-6xl space-y-8">
-      {user?.role === 'doctor' ? <DoctorAppointments /> : <PatientAppointments />}
+      {user?.role === 'doctor' ? (
+        <DoctorAppointments />
+      ) : (
+        <PatientAppointments />
+      )}
     </div>
   );
 }
