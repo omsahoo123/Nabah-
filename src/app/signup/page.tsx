@@ -31,6 +31,7 @@ import { Icons } from '@/components/icons';
 import { User, Stethoscope } from 'lucide-react';
 import { useAuth, UserRole } from '@/hooks/use-auth';
 import Link from 'next/link';
+import { useTranslation } from '@/hooks/use-translation';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -47,6 +48,7 @@ export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { login } = useAuth();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,8 +75,8 @@ export default function SignupPage() {
       login(user);
 
       toast({
-        title: 'Account Created',
-        description: `Welcome, ${user.role === 'doctor' ? 'Dr. ' : ''}${user.name}!`,
+        title: t('signup.toast.title'),
+        description: t('signup.toast.description', { name: user.name.split(' ')[0] }),
       });
       router.push('/dashboard');
       setIsLoading(false);
@@ -87,17 +89,17 @@ export default function SignupPage() {
         <div className="flex flex-col items-center text-center">
             <Icons.logo className="h-12 w-12 text-primary" />
             <h1 className="mt-4 text-3xl font-headline font-bold tracking-tight md:text-4xl">
-                Create an Account
+                {t('signup.welcomeTitle')}
             </h1>
             <p className="mt-2 text-muted-foreground">
-                Join Nabha to manage your health and consultations.
+                {t('signup.welcomeSubtitle')}
             </p>
         </div>
         <Card className="shadow-2xl">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Sign Up</CardTitle>
+            <CardTitle className="font-headline text-2xl">{t('signup.cardTitle')}</CardTitle>
             <CardDescription>
-              Choose your role and fill in your details to get started.
+              {t('signup.cardDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -108,7 +110,7 @@ export default function SignupPage() {
                   name="role"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
-                      <FormLabel>I am a...</FormLabel>
+                      <FormLabel>{t('signup.form.roleLabel')}</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -121,7 +123,7 @@ export default function SignupPage() {
                             </FormControl>
                             <FormLabel htmlFor="patient" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
                                 <User className="mb-3 h-6 w-6" />
-                                Patient
+                                {t('patient')}
                             </FormLabel>
                           </FormItem>
                           <FormItem>
@@ -130,7 +132,7 @@ export default function SignupPage() {
                             </FormControl>
                              <FormLabel htmlFor="doctor" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer">
                                 <Stethoscope className="mb-3 h-6 w-6" />
-                                Doctor
+                                {t('doctor')}
                             </FormLabel>
                           </FormItem>
                         </RadioGroup>
@@ -145,10 +147,10 @@ export default function SignupPage() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>{t('signup.form.nameLabel')}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="e.g., Aarav Sharma"
+                          placeholder={t('signup.form.namePlaceholder')}
                           {...field}
                         />
                       </FormControl>
@@ -162,11 +164,11 @@ export default function SignupPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t('signup.form.emailLabel')}</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder="name@example.com"
+                          placeholder={t('signup.form.emailPlaceholder')}
                           {...field}
                         />
                       </FormControl>
@@ -179,25 +181,25 @@ export default function SignupPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>{t('signup.form.passwordLabel')}</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="8+ characters" {...field} />
+                        <Input type="password" placeholder={t('signup.form.passwordPlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? 'Creating Account...' : 'Create Account'}
+                  {isLoading ? t('signup.form.submitButtonLoading') : t('signup.form.submitButton')}
                 </Button>
               </form>
             </Form>
           </CardContent>
         </Card>
          <p className="px-8 text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
+            {t('signup.loginPrompt')}{' '}
             <Link href="/login" className="underline underline-offset-4 hover:text-primary">
-                Log in
+                {t('signup.loginLink')}
             </Link>
         </p>
       </div>
