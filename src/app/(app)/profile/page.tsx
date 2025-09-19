@@ -38,7 +38,7 @@ const profileSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   email: z.string().email(),
   phone: z.string().optional(),
-  age: z.coerce.number().int().positive().optional(),
+  age: z.coerce.number().int().positive().optional().or(z.literal('')),
   gender: z.enum(['male', 'female', 'other', 'prefer_not_to_say']).optional(),
   address: z.string().optional(),
   avatar: z.string().optional(),
@@ -188,7 +188,7 @@ export default function ProfilePage() {
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
-                        <Input {...field} readOnly={!isEditing} placeholder="e.g., +1 234 567 890" />
+                        <Input {...field} value={field.value ?? ''} readOnly={!isEditing} placeholder="e.g., +1 234 567 890" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -238,7 +238,7 @@ export default function ProfilePage() {
                         <FormItem>
                         <FormLabel>Address</FormLabel>
                         <FormControl>
-                            <Textarea {...field} readOnly={!isEditing} placeholder="123 Health St, Wellness City, 12345" />
+                            <Textarea {...field} value={field.value ?? ''} readOnly={!isEditing} placeholder="123 Health St, Wellness City, 12345" />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
