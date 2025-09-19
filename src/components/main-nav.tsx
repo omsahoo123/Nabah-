@@ -93,9 +93,11 @@ export function MainNav() {
   const menuItems = user.role === 'doctor' ? doctorMenuItems : patientMenuItems;
 
   const isItemActive = (href: string) => {
-    if (href === '/patients') {
-      return pathname.startsWith('/patients');
+    // For nested routes, we want to match the base path.
+    if (href.length > 1) {
+      return pathname.startsWith(href);
     }
+    // For the dashboard, we want an exact match.
     return pathname === href;
   };
 
