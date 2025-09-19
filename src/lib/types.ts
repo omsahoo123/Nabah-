@@ -9,7 +9,7 @@ export type Appointment = {
 
 export type HealthRecord = {
   id: string;
-  date: Date;
+  date: string; // Using string for date to be serializable
   diagnosis: string;
   doctor: string;
   prescription: string;

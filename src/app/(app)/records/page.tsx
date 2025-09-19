@@ -1,3 +1,5 @@
+'use client';
+import * as React from 'react';
 import {
   Table,
   TableBody,
@@ -9,41 +11,21 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, FileText } from 'lucide-react';
-import type { HealthRecord } from '@/lib/types';
-
-const healthRecords: HealthRecord[] = [
-  {
-    id: 'REC001',
-    date: new Date('2023-10-26'),
-    diagnosis: 'Common Cold',
-    doctor: 'Dr. Emily Carter',
-    prescription: 'Rest, Fluids, Paracetamol',
-  },
-  {
-    id: 'REC002',
-    date: new Date('2023-08-15'),
-    diagnosis: 'Annual Check-up',
-    doctor: 'Dr. Ben Adams',
-    prescription: 'Vitamins, Diet plan',
-  },
-  {
-    id: 'REC003',
-    date: new Date('2023-05-02'),
-    diagnosis: 'Allergic Rhinitis',
-    doctor: 'Dr. Emily Carter',
-    prescription: 'Antihistamines',
-  },
-  {
-    id: 'REC004',
-    date: new Date('2022-12-20'),
-    diagnosis: 'Sprained Ankle',
-    doctor: 'Dr. Ben Adams',
-    prescription: 'R.I.C.E. method',
-  },
-];
+import { Download } from 'lucide-react';
+import { healthRecords } from '@/lib/records-data';
+import { useToast } from '@/hooks/use-toast';
 
 export default function RecordsPage() {
+    const { toast } = useToast();
+
+    const handleDownload = (recordId: string) => {
+        toast({
+            title: "Download Started",
+            description: `Downloading record ${recordId}.pdf...`,
+        });
+        // In a real application, this would trigger a file download.
+    };
+
   return (
     <div className="container mx-auto max-w-7xl space-y-8">
       <div>
@@ -79,7 +61,7 @@ export default function RecordsPage() {
                     <Badge variant="secondary">{record.id}</Badge>
                   </TableCell>
                   <TableCell>
-                    {record.date.toLocaleDateString('en-US', {
+                    {new Date(record.date).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
@@ -89,7 +71,7 @@ export default function RecordsPage() {
                   <TableCell>{record.doctor}</TableCell>
                   <TableCell className='max-w-xs truncate'>{record.prescription}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" onClick={() => handleDownload(record.id)}>
                       <Download className="h-4 w-4" />
                        <span className="sr-only">Download record</span>
                     </Button>
