@@ -1,3 +1,3 @@
-import {getApiHandler} from '@genkit-ai/next';
+import {createApiHandler} from '@genkit-ai/next';
 
-export const {GET, POST} = getApiHandler();
+export const {GET, POST} = createApiHandler();
