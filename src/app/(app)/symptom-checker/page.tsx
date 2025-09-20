@@ -3,10 +3,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import {
-  aiSymptomChecker,
-  AISymptomCheckerOutput,
-} from '@/ai/flows/ai-symptom-checker';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -36,6 +32,11 @@ const formSchema = z.object({
   }),
 });
 
+interface AISymptomCheckerOutput {
+  potentialCauses: string;
+}
+
+
 export default function SymptomCheckerPage() {
   const [result, setResult] = useState<AISymptomCheckerOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,8 +54,20 @@ export default function SymptomCheckerPage() {
     setError(null);
     setResult(null);
     try {
-      const response = await aiSymptomChecker(values);
-      setResult(response);
+      const response = await fetch('/api/symptom-checker', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error('An error occurred while checking symptoms.');
+      }
+
+      const responseData: AISymptomCheckerOutput = await response.json();
+      setResult(responseData);
     } catch (e) {
       setError('An error occurred while checking symptoms. Please try again.');
       console.error(e);
